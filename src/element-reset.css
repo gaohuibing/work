@@ -1,0 +1,16 @@
+.el-input{
+    width:224px;
+    display: inline-block
+}
+.el-input__inner{
+    
+    height:32px;
+    background:rgba(255,255,255,1);
+    border-radius:4px;
+    border:1px solid rgba(0,0,0,0.15);
+    line-height: 32px
+}
+.el-input.is-active .el-input__inner, .el-input__inner:focus {
+    border-color: #44B549;
+    outline: 0;
+}
