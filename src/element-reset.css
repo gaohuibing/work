@@ -1,9 +1,7 @@
 .el-input{
-    width:224px;
-    display: inline-block
+    width: 100%
 }
-.el-input__inner{
-    
+.el-input__inner{    
     height:32px;
     background:rgba(255,255,255,1);
     border-radius:4px;
@@ -12,5 +10,47 @@
 }
 .el-input.is-active .el-input__inner, .el-input__inner:focus {
     border-color: #44B549;
-    outline: 0;
+}
+.el-select .el-input.is-focus .el-input__inner{
+    border-color: #44B549;
+}
+.el-button--success{
+    background-color: #44B549;
+    border-color: #44B549;
+}
+.el-input__icon{
+    line-height: 32px
+}
+.export-btn .el-button:focus, .export-btn .el-button:hover{
+    color: #67C23A;
+    border-color: #67C23A;
+    background-color: #dbffdc;
+}
+.el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed{
+    border:none
+}
+.el-table--border, .el-table--group{
+    border: none
+}
+.el-table::before{
+    height: 0;
+}
+.el-table thead tr th{
+    background:#F6F7FF;
+    border-top: 1px solid rgba(231,231,235,1);
+    border-bottom: 1px solid rgba(231,231,235,1);
+    
+}
+.el-table th>.cell{
+    font-size:14px;
+    font-weight:600;
+    color:rgba(28,28,28,1);
+}
+.el-table td{
+    padding: 9px 0
+}
+.el-table td .cell{
+    padding: 0;
+    color: #1C1C1C;
+    font-size: 14px
 }
