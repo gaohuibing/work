@@ -14,7 +14,7 @@
             <el-input v-model="filter.search" placeholder="请输入"></el-input>
           </div>
         </div>
-        <el-button class="filter-btn" type="success" size="small">筛选</el-button>
+        <el-button class="filter-btn" type="primary" size="small">筛选</el-button>
       </div>
       <div class="lab">
         <div class="buts">
@@ -54,8 +54,8 @@
     </div>
     <div class="toolbar">
       <div>
-        <el-button type="success" size="small">新增商品</el-button>
-        <el-button type="success" size="small">第三方导入</el-button>
+        <el-button type="primary" size="small" @click="addHandle">新增商品</el-button>
+        <el-button type="primary" size="small" @click="toExport">第三方导入</el-button>
       </div>
       <div class="export-btn">
         <el-button size="small">导出全部</el-button>
@@ -76,7 +76,7 @@
           <template slot-scope="scope">
             <div class="goodinfo clearfix">
               <div class="pic">
-                <img src='../../../../assets/images/test.png'>
+                <img src="../../../../assets/images/test.png">
               </div>
               <div class="info">
                 <h5>{{scope.row.name}}</h5>
@@ -97,12 +97,36 @@
         <el-table-column prop="date" label="更新时间" align="center"></el-table-column>
         <el-table-column prop="date" label="操作" align="center" width="150">
           <template slot-scope="scope">
-            <a @click.prevent="copy(scope.id)" style="padding:0 7px;cursor: pointer">复制</a>
+            <a @click.prevent="copy(scope.row.id)" style="padding:0 7px;cursor: pointer">复制</a>
             <a @click.prevent style="padding:0 7px;color:#44B549;cursor: pointer">编辑</a>
-            <a @click.prevent style="padding:0 7px;color:#999;cursor: pointer">删除</a>
+            <a
+              @click.prevent="delHandle(scope.row.id)"
+              style="padding:0 7px;color:#999;cursor: pointer"
+            >删除</a>
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <!-- //底部操作 -->
+    <div class="bot-tools">
+      <div>
+        <el-checkbox
+          :indeterminate="isIndeterminate"
+          v-model="checkAll"
+          @change="handleCheckAllChange"
+        >全选</el-checkbox>
+        <el-button size="small">加入下载</el-button>
+        <el-button size="small">删除</el-button>
+      </div>
+      <div class="flex-grow pagi-wrap">
+        <div>共199条，每页20条</div>
+        <el-pagination background layout="prev, pager, next" :total="1000" :pager-count="5"></el-pagination>
+        <div>
+          到第
+          <el-input v-model="page" class="topage"></el-input>页
+          <el-button size="small" class="pageBtn">GO</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -138,17 +162,6 @@ export default {
       value: "",
       goodLists: {
         data: [
-          {            
-            name: "电脑电脑电脑",
-            type: "服装/男装",
-            marketPrice: "50.00",
-            normalPrice: "30.00",
-            price: "180.00",
-            kucun: "12",
-            liulan: "200",
-            xiaolia: "100",
-            date: "2019-02-03 00:00:00"
-          },
           {
             user: "12",
             name: "13",
@@ -160,47 +173,115 @@ export default {
             liulan: "200",
             xiaolia: "100",
             date: "2019-02-03 00:00:00"
+          },
+          {
+            name: "电脑电脑电脑",
+            type: "服装/男装",
+            marketPrice: "50.00",
+            normalPrice: "30.00",
+            price: "180.00",
+            kucun: "12",
+            liulan: "200",
+            xiaolia: "100",
+            date: "2019-02-03 00:00:00"
+          },
+          {
+            name: "电脑电脑电脑",
+            type: "服装/男装",
+            marketPrice: "50.00",
+            normalPrice: "30.00",
+            price: "180.00",
+            kucun: "12",
+            liulan: "200",
+            xiaolia: "100",
+            date: "2019-02-03 00:00:00"
+          },
+          {
+            name: "电脑电脑电脑",
+            type: "服装/男装",
+            marketPrice: "50.00",
+            normalPrice: "30.00",
+            price: "180.00",
+            kucun: "12",
+            liulan: "200",
+            xiaolia: "100",
+            date: "2019-02-03 00:00:00"
           }
         ]
-      }
+      },
+      isIndeterminate: true,
+      checkAll: false,
+      page: "1"
     };
   },
   methods: {
     modifyHandle() {},
     handleSelectionChange() {},
-    copy(id) {}
+    copy(id) {},
+    //删除数据
+    delHandle(id) {
+      this.$confirm("删除后不可恢复, 是否继确认删除?", "", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        center: true,
+        showClose: false,
+        width: "271"
+      }).then(() => {});
+    },
+    // 底部全选
+    handleCheckAllChange(val) {
+      this.isIndeterminate = false;
+    },
+    toExport() {
+      this.$router.push({
+        path: "/company/warehouse/export"
+      });
+    },
+    addHandle() {
+      this.toEdit();
+    },
+    toEdit() {
+      this.$router.push({
+        path: "/company/warehouse/edit"
+      });
+    }
   }
 };
 </script>
 <style scoped>
-.goodinfo .pic{
+.goodinfo .pic {
   width: 80px;
   height: 80px;
   float: left;
 }
-.goodinfo .pic img{
+.goodinfo .pic img {
   width: 100%;
   height: 100%;
 }
-.goodinfo .info{
+.goodinfo .info {
   width: 140px;
   float: left;
-  margin-left: 10px
+  margin-left: 10px;
 }
-.goodinfo .info h5{
+.goodinfo .info h5 {
   height: 40px;
   font-size: 14px;
   font-weight: normal;
-  line-height: 20px
+  line-height: 20px;
 }
-.goodinfo .info .market-price{
+.goodinfo .info .market-price {
   color: #999999;
   text-decoration: line-through;
-  font-size: 12px
-}
-.goodinfo .info .normal-price{
-  color: #F76260; 
   font-size: 12px;
-  margin-top: 8px
+}
+.goodinfo .info .normal-price {
+  color: #f76260;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.bot-tools {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 0;
 }
 </style>

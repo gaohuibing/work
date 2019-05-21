@@ -1,3 +1,10 @@
+/* 改变主题色变量 */
+$--color-primary: #44B549;
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";
 .el-input{
     width: 100%
 }
@@ -8,24 +15,12 @@
     border:1px solid rgba(0,0,0,0.15);
     line-height: 32px
 }
-.el-input.is-active .el-input__inner, .el-input__inner:focus {
-    border-color: #44B549;
-}
-.el-select .el-input.is-focus .el-input__inner{
-    border-color: #44B549;
-}
-.el-button--success{
-    background-color: #44B549;
-    border-color: #44B549;
-}
+
+
 .el-input__icon{
     line-height: 32px
 }
-.export-btn .el-button:focus, .export-btn .el-button:hover{
-    color: #67C23A;
-    border-color: #67C23A;
-    background-color: #dbffdc;
-}
+
 .el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed{
     border:none
 }
@@ -53,4 +48,23 @@
     padding: 0;
     color: #1C1C1C;
     font-size: 14px
+}
+.el-message-box{
+    width: 271px
+}
+.el-message-box span{
+    font-size: 14px!important
+}
+.el-message-box__btns{
+    margin-top: 20px
+}
+.el-message-box__btns button:nth-child(2){
+    margin-left: 50px
+}
+
+//分页
+.el-pagination.is-background .btn-prev, .el-pagination.is-background .btn-next, .el-pagination.is-background .el-pager li{
+    border-radius: 50%;
+    height: 30px;
+    line-height: 30px
 }

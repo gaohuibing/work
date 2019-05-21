@@ -3,6 +3,9 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
+// element
+import './element-reset.scss'
 // 全局css
 import './main.css'
 

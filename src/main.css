@@ -1,4 +1,4 @@
-@import './element-reset.css';
+/* @import './element-reset.css'; */
 /* css reset */
 html{font-family: '微软雅黑',"Helvetica Neue", Helvetica, STHeiTi, sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
 html,body{-webkit-user-select:none;user-select:none;background: #f5f5f5;font-size: 14px}html,body,div,object,iframe,applet,object,h1,h2,h3,h4,h5,h6,p,blockquote,pre,address,dl,dt,dd,ol,ul,li,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video,progress{margin:0;padding:0;border:0;vertical-align:baseline;}a{text-decoration:none;-webkit-touch-callout:none;background-color:transparent}li{list-style:none}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px
@@ -34,6 +34,32 @@ color: #cecece;
 body,html{
     margin: 0;
     background: #F5F5F5
+}
+.flex-grow{
+    flex-grow: 1
+}
+.pagi-wrap{
+    display: flex;
+    justify-content: flex-end;
+    line-height: 30px
+}
+.topage{
+    width: 32px;
+    margin: 0 2px
+}
+.topage .el-input__inner{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    text-align: center
+}
+.pageBtn{
+    width: 40px;
+    height: 30px;
+    border-radius: 15px;
+    padding: 0;
+    text-align: center;
 }
 .main{
     width: 1200px;

@@ -14,15 +14,34 @@ export default new Router({
         {
           path: 'company',
           component: h => import('@/components/pages/company/Company.vue'),
+          // 企业
           redirect: '/company/home',
           children:[
+            // 首页
             {
               path:'home',
-              component:h=>import('@/components/pages/company/home/Home')
+              component:h=>import('@/components/pages/company/Home')
             },
+            // 商品仓库
             {
               path:'warehouse',
-              component:h=>import('@/components/pages/company/home/Warehouse')
+              component: h => import('@/components/pages/company/RouteBox'),
+              redirect:'/company/warehouse/warehouse',
+              children:[
+                {
+                  path:'warehouse',
+                  component:h=>import('@/components/pages/company/warehouse/Warehouse')
+                },
+                {
+                  path:'export',
+                  component:h=>import('@/components/pages/company/warehouse/Export')
+                },
+                {
+                  path:'edit',
+                  component:h=>import('@/components/pages/company/warehouse/Edit')
+                }
+              ]
+             
             }
           ]
         }
