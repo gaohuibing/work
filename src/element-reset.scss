@@ -68,3 +68,13 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
     height: 30px;
     line-height: 30px
 }
+.el-breadcrumb{
+    height: 100%;
+    line-height: 46px
+}
+.el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover{
+    color: #44B549;
+}
+.el-textarea__inner{
+    width: 370px
+}

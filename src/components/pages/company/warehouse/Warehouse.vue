@@ -14,10 +14,13 @@
             <el-input v-model="filter.search" placeholder="请输入"></el-input>
           </div>
         </div>
-        <el-button class="filter-btn" type="primary" size="small">筛选</el-button>
+        <div>
+          <el-button class="filter-btn" type="primary" size="small">筛选</el-button>
+          <el-button size="small">导出</el-button>
+        </div>
       </div>
-      <div class="lab">
-        <div class="buts">
+      <div class="lab clearfix" style="display:block">
+        <div class="buts" style="float:left">
           <span>商品分类：</span>
           <div class="inp-box">
             <el-select v-model="value" placeholder="请选择">
@@ -30,7 +33,7 @@
             </el-select>
           </div>
         </div>
-        <div class="buts">
+        <div class="buts" style="float:left">
           <span>价格：</span>
           <div class="inp-box" style="width:104px">
             <el-select v-model="value" placeholder="请选择">
@@ -50,15 +53,15 @@
             <el-input v-model="filter.search" placeholder="¥ 最高"></el-input>
           </div>
         </div>
+        <div class="reset">
+          <a href>重置</a>
+        </div>
       </div>
     </div>
     <div class="toolbar">
       <div>
         <el-button type="primary" size="small" @click="addHandle">新增商品</el-button>
         <el-button type="primary" size="small" @click="toExport">第三方导入</el-button>
-      </div>
-      <div class="export-btn">
-        <el-button size="small">导出全部</el-button>
       </div>
     </div>
     <div class="table-content">
@@ -279,9 +282,13 @@ export default {
   font-size: 12px;
   margin-top: 8px;
 }
-.bot-tools {
-  display: flex;
-  justify-content: space-between;
-  padding: 24px 0;
+.reset {
+  float: right;
+}
+.reset a {
+  color: #999999;
+  line-height: 32px;
+  padding: 0 15px;
+  font-size: 14px;
 }
 </style>

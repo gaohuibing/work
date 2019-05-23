@@ -1,12 +1,14 @@
 <template>
-  <div id="app">
+  <div id="app" class="full-height">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  data(){
+    return{}
+  }
 }
 </script>
 

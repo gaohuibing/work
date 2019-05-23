@@ -21,6 +21,16 @@ color: #cecece;
 :-ms-input-placeholder { /* Internet Explorer 10+ */ 
 color: #cecece; 
 }
+html,body{
+    height: 100%;
+    margin: 0;
+    background: #F5F5F5;
+    font-size: 14px;
+    color: #1C1C1C
+}
+.full-height{
+    height: 100%
+}
 *{
     box-sizing: border-box
 }
@@ -31,10 +41,6 @@ color: #cecece;
     display: block;
 }
 
-body,html{
-    margin: 0;
-    background: #F5F5F5
-}
 .flex-grow{
     flex-grow: 1
 }
@@ -64,19 +70,24 @@ body,html{
 .main{
     width: 1200px;
     margin: 0 auto;
-    padding: 30px 0;
+    position: absolute;
+    top: 98px;
+    bottom: 30px;
+    left: 50%;
+    margin-left: -600px
 }
 .content{    
     background: #fff;
     border:1px #E7E7EB solid;
-    min-height: 800px
 }
 .wrap{
     width: 998px;
     float: left;
     min-height: 800px;
     border-left: 1px solid #E7E7EB;
-    padding:0 16px
+    padding:0 16px;
+    position: relative;
+    overflow-y: auto
 }
 .sider{
     width: 200px;
@@ -143,3 +154,49 @@ body,html{
     justify-content: space-between;
     padding: 10px 0
 }
+/* 底部工具栏1 */
+.bot-tools {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 16px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+  /* 底部工具栏2 */
+.bot-tools-t {
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    border-top: 1px solid #E7E7EB
+  }
+  /* 面包屑导航 */
+  .a-bread{
+      height: 46px;
+      border-bottom: 1px solid #E7E7EB;
+      line-height: 46px
+  }
+
+  /* 表单 */
+  .form-content{
+      padding: 20px 0
+  }
+  .form-group{
+    display: flex;
+    line-height: 32px;
+    margin-bottom: 20px
+  }
+  .form-group .f-label{
+      width: 200px;
+      text-align: right;
+      padding-right: 15px
+  }
+  .form-group .f-label span{
+      color: #ED5580;
+      margin-right: 3px
+  }

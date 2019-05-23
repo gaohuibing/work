@@ -1,5 +1,5 @@
 <template>
-    <div class="sider">
+    <div class="sider full-height">
         <ul>
             <router-link
 				tag="li"

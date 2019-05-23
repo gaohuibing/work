@@ -1,7 +1,7 @@
 <template>
-    <div class="clearfix">
+    <div class="clearfix full-height">
         <app-sider></app-sider>
-        <div class="wrap">
+        <div class="wrap full-height">
             <router-view></router-view>
         </div>        
     </div>
