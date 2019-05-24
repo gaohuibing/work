@@ -26,7 +26,10 @@ html,body{
     margin: 0;
     background: #F5F5F5;
     font-size: 14px;
-    color: #1C1C1C
+    color: #1C1C1C;
+}
+a{
+    cursor: pointer;
 }
 .full-height{
     height: 100%
