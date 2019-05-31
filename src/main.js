@@ -11,24 +11,46 @@ import './main.css'
 
 import App from './App'
 import router from './router'
+import store from './store'
 
 Vue.use(ElementUI);
 
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+
+import api from './utils/api';
 
 import VueQuillEditor from 'vue-quill-editor'
-
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 Vue.use(VueQuillEditor, /* { default global options } */ )
+
+window.Vue = Vue;
+moment.locale('zh-cn');
+window.moment = moment;
+
+import Axios from 'axios';
+import VueAxios from 'vue-axios';
+
+Vue.use(VueAxios, Axios);
+
+import VueBus from 'vue-bus';
+
+Vue.use(VueBus);
+
+Object.defineProperty(Vue.prototype, '$moment', { value: moment });
+// Object.defineProperty(Vue.prototype, '$api', { value: api });
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
     router,
+    store,
     components: { App },
     template: '<App/>'
 })

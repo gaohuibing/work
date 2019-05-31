@@ -84,6 +84,8 @@ export default {
   background: #fff;
   height: 68px;
   line-height: 68px;
+  position: relative;
+  z-index: 2;
 }
 .logo {
   width: 161px;
