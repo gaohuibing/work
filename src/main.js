@@ -42,7 +42,7 @@ import VueBus from 'vue-bus';
 Vue.use(VueBus);
 
 Object.defineProperty(Vue.prototype, '$moment', { value: moment });
-// Object.defineProperty(Vue.prototype, '$api', { value: api });
+Object.defineProperty(Vue.prototype, '$api', { value: api });
 
 Vue.config.productionTip = false
 

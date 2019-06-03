@@ -4,10 +4,16 @@ import NProgress from 'nprogress';
 import Vue from 'vue';
 import Cookies from 'js-cookie';
 
+
 let cookieTokenKey = `${window.location.pathname}/token`;
 let storageTokenKey = `token@${window.location.hostname}:${window.location.port}${window.location.pathname}`;
 // let apiUrl = window.env.api.url || '';
-let apiUrl = '';
+// 配置API接口地址
+let apiUrl = process.env.API_HOST;
+let NODE_ENV = process.env.NODE_ENV;
+if (NODE_ENV == "production") {
+    apiUrl = location.protocol + "//" + location.host;
+}
 
 let mergeUrl = function(url, params) {
     url += (-1 === url.indexOf('?')) ? '?' : '&';

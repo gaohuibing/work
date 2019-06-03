@@ -58,6 +58,22 @@ export default new Router({
                             }
                         ]
 
+                    },
+                    // 商品订单
+                    {
+                        path: 'shop_orders',
+                        component: h =>
+                            import ('@/components/pages/company/RouteBox'),
+                        redirect: '/company/shop_orders/index',
+                        query: {
+                            id: 0
+                        },
+                        children: [{
+                            path: 'index',
+                            component: h =>
+                                import ('@/components/pages/company/shopOrders/Index'),
+
+                        }]
                     }
                 ]
             }]

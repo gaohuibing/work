@@ -80,20 +80,19 @@
         <ul class="extra-list">
           <li>
             <div>
-              <img src="../../../assets/images/add-2.png" alt="">
+              <img src="../../../assets/images/add-2.png" alt>
               <span>新增商品</span>
             </div>
-            
           </li>
           <li>
             <div>
-              <img src="../../../assets/images/download.png" alt="">
+              <img src="../../../assets/images/download.png" alt>
               <span>下载中心</span>
             </div>
           </li>
           <li>
             <div>
-              <img src="../../../assets/images/yizhanggui.png" alt="">
+              <img src="../../../assets/images/yizhanggui.png" alt>
               <span>易掌柜</span>
             </div>
           </li>
@@ -105,39 +104,38 @@
         <ul class="normal-list">
           <li>
             <div>
-              <img src="../../../assets/images/gift.png" alt="">
+              <img src="../../../assets/images/gift.png" alt>
               <div class="inp">
                 <h5>活动</h5>
                 <p>
                   <span>已创：2</span>
                   <span>可创：2</span>
                 </p>
-              </div>              
-            </div>
-            
-          </li>
-          <li>
-            <div>
-              <img src="../../../assets/images/shop.png" alt="">
-              <div class="inp">
-                <h5>活动</h5>
-                <p>
-                  <span>已创：2</span>
-                  <span>可创：2</span>
-                </p>
-              </div>              
+              </div>
             </div>
           </li>
           <li>
             <div>
-              <img src="../../../assets/images/share.png" alt="">
+              <img src="../../../assets/images/shop.png" alt>
               <div class="inp">
                 <h5>活动</h5>
                 <p>
                   <span>已创：2</span>
                   <span>可创：2</span>
                 </p>
-              </div>              
+              </div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <img src="../../../assets/images/share.png" alt>
+              <div class="inp">
+                <h5>活动</h5>
+                <p>
+                  <span>已创：2</span>
+                  <span>可创：2</span>
+                </p>
+              </div>
             </div>
           </li>
         </ul>
@@ -149,6 +147,12 @@
 export default {
   data() {
     return {};
+  },
+  mounted(){
+	  console.log(this.$api.getToken())
+  },
+  methods:{
+	  
   }
 };
 </script>
@@ -263,12 +267,12 @@ export default {
   font-size: 36px;
   color: rgba(28, 28, 28, 1);
   line-height: 50px;
-  font-weight: normal
+  font-weight: normal;
 }
-.todo-list li p{
-  margin-bottom: 10px
+.todo-list li p {
+  margin-bottom: 10px;
 }
-.extra-list{
+.extra-list {
   display: flex;
   justify-content: space-between;
 }
@@ -276,62 +280,62 @@ export default {
   text-align: center;
   width: 33.33%;
 }
-.extra-list li>div{
+.extra-list li > div {
   width: 196px;
   height: 58px;
   line-height: 58px;
-  border: 1px solid rgba(231,231,235,1);
+  border: 1px solid rgba(231, 231, 235, 1);
   border-radius: 4px;
   text-align: center;
-  margin: 0 auto
+  margin: 0 auto;
 }
-.extra-list li>div:hover{
+.extra-list li > div:hover {
   border-color: #44b549;
   cursor: pointer;
 }
-.extra-list li>div img{
+.extra-list li > div img {
   vertical-align: middle;
-  margin-right: 24px
+  margin-right: 24px;
 }
-.normal-list{
+.normal-list {
   display: flex;
 }
 .normal-list li {
   text-align: center;
   width: 33.33%;
 }
-.normal-list li>div{
+.normal-list li > div {
   width: 241px;
   height: 112px;
   padding: 24px 0 24px 24px;
-  border: 1px solid rgba(231,231,235,1);
+  border: 1px solid rgba(231, 231, 235, 1);
   border-radius: 4px;
   text-align: center;
   margin: 0 auto;
-  display: flex
+  display: flex;
 }
-.normal-list li>div:hover{
+.normal-list li > div:hover {
   border-color: #44b549;
   cursor: pointer;
 }
-.normal-list li>div img{
+.normal-list li > div img {
+  width: 64px;
   vertical-align: middle;
-  margin-right: 16px
+  margin-right: 16px;
 }
-.normal-list li .inp{
+.normal-list li .inp {
   text-align: left;
-  
 }
-.normal-list li .inp h5{
+.normal-list li .inp h5 {
   font-size: 15px;
-  line-height: 32px
+  line-height: 32px;
 }
-.normal-list li .inp p{
+.normal-list li .inp p {
   color: #999;
   font-size: 13px;
-  line-height: 32px
+  line-height: 32px;
 }
-.normal-list li .inp p span{
-  margin-right: 16px
+.normal-list li .inp p span {
+  margin-right: 16px;
 }
 </style>

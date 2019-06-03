@@ -26,11 +26,12 @@ export default {
         },
         {
           name: "商品订单",
-          path: "/company/shop_order"
+	    path: "/company/shop_orders?id=0",
+	 
         },
         {
           name: "服务订单",
-          path: "/company/service_order"
+          path: "/company/service_orders"
         },
         {
           name: "财务管理",

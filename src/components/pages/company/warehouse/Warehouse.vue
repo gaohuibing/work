@@ -223,10 +223,10 @@ export default {
     copy(id) {},
     //删除数据
     delHandle(id) {
-      this.$confirm("删除后不可恢复, 是否继确认删除?", "", {
+      this.$confirm("您所选商品有正在被活动使用，如确定 删除，活动中的商品也将被强制删除， 并且不可恢复?", "确定删除!", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        center: true,
+        center: false,
         showClose: false,
         width: "271"
       }).then(() => {});
