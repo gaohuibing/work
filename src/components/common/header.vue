@@ -4,7 +4,9 @@
       <div class="logo">
         <img src="../../assets/images/logo.png" alt>
       </div>
-      <div class="nav">
+	<template v-if='isLogin'>
+
+ <div class="nav">
         <ul>
           <router-link
             tag="li"
@@ -28,6 +30,8 @@
      
         </ul>
       </div>
+	</template>
+     
     </div>
   </div>
 </template>
@@ -74,8 +78,17 @@ export default {
               icon:'el-icon-switch-button',
               url:'/exit'
           }
-      ]
+	],
+	isLogin:false
     };
+  },
+  mounted(){
+	  if(this.$api.getToken()){
+		  console.log(this.$api.getToken())
+		  this.isLogin=true
+	  }else{
+		  this.isLogin=false
+	  }
   }
 };
 </script>

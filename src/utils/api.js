@@ -12,7 +12,7 @@ let storageTokenKey = `token@${window.location.hostname}:${window.location.port}
 let apiUrl = process.env.API_HOST;
 let NODE_ENV = process.env.NODE_ENV;
 if (NODE_ENV == "production") {
-    apiUrl = location.protocol + "//" + location.host;
+    apiUrl = location.protocol + "//" + location.host + '/';
 }
 
 let mergeUrl = function(url, params) {

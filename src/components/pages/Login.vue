@@ -17,11 +17,11 @@
             </div>
             <div class="tab-content">
               <template v-if="isGetPwd">
-                <get-pwd :isGetPwd.sync='isGetPwd'></get-pwd>
+                <get-pwd :isGetPwd.sync="isGetPwd"></get-pwd>
               </template>
               <template v-else>
-                <app-login v-if="isLogin" :isGetPwd.sync='isGetPwd'></app-login>
-                <app-signin v-if="isSignin"></app-signin>
+                <app-login v-if="isLogin" :isGetPwd.sync="isGetPwd"></app-login>
+                <app-signin v-if="isSignin" :isLogin.sync="isLogin"></app-signin>
               </template>
             </div>
           </div>
@@ -157,7 +157,15 @@ export default {
       }
     }
   },
-  watch: {}
+  watch: {
+    isLogin(v) {
+      if (v) {
+        this.isSignin = false;
+      } else {
+        this.isSignin = true;
+      }
+    }
+  }
 };
 </script>
  <style scoped>

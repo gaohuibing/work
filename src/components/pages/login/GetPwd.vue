@@ -8,7 +8,7 @@
       <div class="login-item">
         <img src="../../../assets/images/code.png" alt class="x-icon">
         <el-input placeholder="请输入验证码" v-model="input" style="width:140px"></el-input>
-        <div class="getcode">获取验证码</div>
+        <div class="getcode" @click="getCode">获取验证码</div>
       </div>
       <div class="login-item">
         <img src="../../../assets/images/pwd.png" alt class="x-icon">
@@ -39,6 +39,13 @@ export default {
     };
   },
   methods: {
+    getCode() {
+      this.$message({
+        showClose: true,
+        message: "抱歉，该功能尚未开放",
+        type: "warning"
+      });
+    },
     goLogin() {
       this.$emit("update:isGetPwd", false);
     }

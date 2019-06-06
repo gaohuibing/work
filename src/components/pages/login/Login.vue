@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      mobile: "",
+      mobile: store.get("username") || "",
       password: "",
       captcha: "",
       checked: true,
@@ -91,12 +91,17 @@ export default {
               return false;
             }
             this.$api.setToken(token);
+            if (this.checked) {
+              store.set("username", this.mobile);
+            }
             window.location.href = "/";
           } else {
             this.$message.error({ message: res.data.msg });
           }
         })
-        .catch(err => {});
+        .catch(err => {
+          this.$message.error({ message: err });
+        });
     },
     // 找回密码
     findPwd() {

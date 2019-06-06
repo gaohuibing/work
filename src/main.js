@@ -41,6 +41,8 @@ import VueBus from 'vue-bus';
 
 Vue.use(VueBus);
 
+let localStore = require('store');
+window.store = localStore;
 Object.defineProperty(Vue.prototype, '$moment', { value: moment });
 Object.defineProperty(Vue.prototype, '$api', { value: api });
 
