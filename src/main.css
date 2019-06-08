@@ -407,6 +407,7 @@ a {
     width: 998px;
     float: left;
     min-height: 800px;
+    overflow-y: auto;
     border-left: 1px solid #E7E7EB;
     padding: 0 16px;
     position: relative;
@@ -505,9 +506,10 @@ a {
     justify-content: space-between;
     padding: 24px 16px;
     width: 100%;
-    position: absolute;
+    /* position: absolute; */
     bottom: 0;
     left: 0;
+    font-size: 12px
 }
 
 

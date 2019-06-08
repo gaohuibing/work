@@ -209,6 +209,17 @@ export default {
             liulan: "200",
             xiaolia: "100",
             date: "2019-02-03 00:00:00"
+          },
+          {
+            name: "电脑电脑电脑",
+            type: "服装/男装",
+            marketPrice: "50.00",
+            normalPrice: "30.00",
+            price: "180.00",
+            kucun: "12",
+            liulan: "200",
+            xiaolia: "100",
+            date: "2019-02-03 00:00:00"
           }
         ]
       },

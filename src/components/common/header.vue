@@ -4,34 +4,35 @@
       <div class="logo">
         <img src="../../assets/images/logo.png" alt>
       </div>
-	<template v-if='isLogin'>
+      <template v-if="isLogin">
+        <div class="nav">
+          <ul>
+            <router-link
+              tag="li"
+              v-for="(item, index) in navMenu"
+              :key="index"
+              :to="item.url"
+              active-class="active"
+            >{{item.name}}</router-link>
+          </ul>
+        </div>
 
- <div class="nav">
-        <ul>
-          <router-link
-            tag="li"
-            v-for="(item, index) in navMenu"
-            :key="index"
-            :to="item.url"
-            active-class="active"
-          >{{item.name}}</router-link>
-        </ul>
-      </div>
-
-      <div class="tools">
-        <ul>
-          <router-link
-            tag="li"
-            v-for="(item, index) in nav"
-            :key="index"
-            :to="item.url"
-            active-class="active"
-          ><i :class="item.icon"></i>{{item.name}}<span v-if='item.name=="消息"'>1</span></router-link>
-     
-        </ul>
-      </div>
-	</template>
-     
+        <div class="tools">
+          <ul>
+            <router-link
+              tag="li"
+              v-for="(item, index) in nav"
+              :key="index"
+              :to="item.url"
+              active-class="active"
+            >
+              <i :class="item.icon"></i>
+              {{item.name}}
+              <span v-if="item.name=="消息"">1</span>
+            </router-link>
+          </ul>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -62,33 +63,33 @@ export default {
           url: "/service"
         }
       ],
-      nav:[
-          {
-              name:'消息',
-              icon:'el-icon-bell',
-              url:'/message'
-          },
-          {
-              name:'帮助',
-              icon:'',
-              url:'/support'
-          },
-          {
-              name:'退出',
-              icon:'el-icon-switch-button',
-              url:'/exit'
-          }
-	],
-	isLogin:false
+      nav: [
+        {
+          name: "消息",
+          icon: "el-icon-bell",
+          url: "/message"
+        },
+        {
+          name: "帮助",
+          icon: "",
+          url: "/support"
+        },
+        {
+          name: "退出",
+          icon: "el-icon-switch-button",
+          url: "/exit"
+        }
+      ],
+      isLogin: false
     };
   },
-  mounted(){
-	  if(this.$api.getToken()){
-		  console.log(this.$api.getToken())
-		  this.isLogin=true
-	  }else{
-		  this.isLogin=false
-	  }
+  mounted() {
+    if (this.$api.getToken()) {
+      console.log(this.$api.getToken());
+      this.isLogin = true;
+    } else {
+      this.isLogin = false;
+    }
   }
 };
 </script>
@@ -146,15 +147,15 @@ export default {
   color: #1c1c1c;
   cursor: pointer;
 }
-.tools li.active{
-    color:#44b549 
+.tools li.active {
+  color: #44b549;
 }
-.tools li i{
-    font-size: 14px;
-    margin-right: 3px
+.tools li i {
+  font-size: 14px;
+  margin-right: 3px;
 }
-.tools li span{
-    color: #F76260
+.tools li span {
+  color: #f76260;
 }
 </style>
 
