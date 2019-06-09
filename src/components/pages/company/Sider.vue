@@ -31,7 +31,7 @@ export default {
         },
         {
           name: "服务订单",
-          path: "/company/service_orders"
+          path: "/company/service_orders?id=0"
         },
         {
           name: "财务管理",
@@ -47,7 +47,7 @@ export default {
         },
         {
           name: "安全设置",
-          path: "/company/safety"
+          path: "/company/safetySetting"
         },
         {
           name: "企业认证",
