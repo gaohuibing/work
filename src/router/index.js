@@ -21,7 +21,7 @@ export default new Router({
             component: h =>
                 import ('@/components/pages/Layout.vue'),
             redirect: '/company',
-            // beforeEnter: requireAuth,
+            beforeEnter: requireAuth,
             children: [{
                 path: 'company',
                 component: h =>

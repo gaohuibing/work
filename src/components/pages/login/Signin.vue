@@ -75,12 +75,12 @@ export default {
     },
     // 获取验证码
     getCode() {
-      this.$message({
-        showClose: true,
-        message: "抱歉，该功能尚未开放",
-        type: "warning"
-      });
-      return;
+      // this.$message({
+      //   showClose: true,
+      //   message: "抱歉，该功能尚未开放",
+      //   type: "warning"
+      // });
+      // return;
       if (this.form.mobile == "") {
         this.$message.error({ message: "请输入手机号" });
         return false;

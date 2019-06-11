@@ -116,7 +116,9 @@
                 <a>关于小美</a>|
                 <a style="padding-left:10px;">小美客服</a>
               </div>
-              <p>2017 &#169; 小美网（苏州）网络信息科技有限公司 版权所有 Copyright &#169; 2017-2019 Xiaomei. All Rights Reserved. 苏ICP备17067525号-2</p>
+              <p>2017 &#169; 小美网（苏州）网络信息科技有限公司 版权所有 Copyright &#169; 2017-2019 Xiaomei. All Rights Reserved. <a href="
+http://www.beian.miit.gov.cn/state/outPortal/loginPortal.action;jsessionid=Z-JEYbBYGAGHOD2D9DU5DuZRoavPKb4tR0nsxi0c5Rx8t2k-ZyLO!285674180
+" style="color:#929292">苏ICP备17067525号-2</a></p>
             </div>
           </div>
         </div>
