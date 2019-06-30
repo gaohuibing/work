@@ -406,7 +406,7 @@ a {
 .wrap {
     width: 998px;
     float: left;
-    min-height: 800px;
+    /* min-height: 800px; */
     overflow-y: auto;
     border-left: 1px solid #E7E7EB;
     padding: 0 16px;
@@ -670,4 +670,9 @@ a {
 
 .vue-scrollbar__scrollbar-vertical {
     z-index: 2;
+}
+
+.sourcebox .el-dialog__body {
+    padding-top: 0;
+    padding-bottom: 0
 }

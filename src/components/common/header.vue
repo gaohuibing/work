@@ -28,7 +28,7 @@
             >
               <i :class="item.icon"></i>
               {{item.name}}
-              <span v-if="item.name=="消息"">1</span>
+              <span v-if="item.name=='消息'">1</span>
             </router-link>
           </ul>
         </div>

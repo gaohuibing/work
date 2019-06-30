@@ -40,11 +40,11 @@ export default {
   },
   methods: {
     getCode() {
-      this.$message({
-        showClose: true,
-        message: "抱歉，该功能尚未开放",
-        type: "warning"
-      });
+      // this.$message({
+      //   showClose: true,
+      //   message: "抱歉，该功能尚未开放",
+      //   type: "warning"
+      // });
     },
     goLogin() {
       this.$emit("update:isGetPwd", false);

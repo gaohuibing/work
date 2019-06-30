@@ -175,41 +175,12 @@
           <!---->
           <div class="upload-box">
             <ul>
-              <li>
-                <el-upload
-                  class="avatar-uploader"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                >
-                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-                <p>主图</p>
+              <li v-for="(item,index) in goodsPics" :key="index">
+                <img :src="item" alt />
+                <span class="el-icon-error"></span>
               </li>
-              <li>
-                <el-upload
-                  class="avatar-uploader"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                >
-                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-                <p>副图</p>
-              </li>
-              <li>
-                <el-upload
-                  class="avatar-uploader"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                >
-                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-                <p>副图</p>
+              <li @click="imgsDialogHandle">
+                <i class="el-icon-plus avatar-uploader-icon"></i>
               </li>
             </ul>
           </div>
@@ -232,15 +203,18 @@
         </div>
       </form>
     </div>
-    <div class="bot-tools-t" style='position:static'>
+    <div class="bot-tools-t" style="position:static">
       <el-button type="primary">确定</el-button>
       <el-button>取消</el-button>
-	<el-button type="primary" plain>预览</el-button>
+      <el-button type="primary" plain>预览</el-button>
     </div>
+    <source-dialog :visible.sync="visible"></source-dialog>
   </div>
 </template>
 <script>
+import SourceDialog from "./sourceDialog";
 export default {
+  components: { SourceDialog },
   data() {
     return {
       radio: 3,
@@ -261,7 +235,9 @@ export default {
       content: "<h2>I am Example</h2>",
       editorOption: {
         // some quill options
-      }
+      },
+      goodsPics: [],
+      visible: false
     };
   },
   computed: {
@@ -270,7 +246,7 @@ export default {
     }
   },
   mounted() {
-    console.log("this is current quill instance object", this.editor);
+    
   },
   methods: {
     handleChange(value) {
@@ -291,6 +267,10 @@ export default {
     onEditorChange({ quill, html, text }) {
       console.log("editor change!", quill, html, text);
       this.content = html;
+    },
+    // 素材弹窗
+    imgsDialogHandle() {
+	this.visible = true;
     }
   }
 };
@@ -305,13 +285,30 @@ export default {
 }
 .upload-box ul {
   display: flex;
-  justify-content: center;
+  padding-bottom: 20px;
+  padding-left: 184px;
 }
 .upload-box li {
   margin: 0 15px;
-}
-.upload-box li p {
-  line-height: 30px;
+  cursor: pointer;
+  position: relative;
+  background: #f6f7ff;
+  border: 1px solid #e7e7eb;
+  border-radius: 3px;
+  overflow: hidden;
   text-align: center;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+}
+.upload-box li i {
+  font-size: 60px;
+}
+.upload-box li span {
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  font-size: 30px;
+  cursor: pointer;
 }
 </style>

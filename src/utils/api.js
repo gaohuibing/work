@@ -2,17 +2,18 @@ import axios from 'axios';
 import qs from 'qs';
 import NProgress from 'nprogress';
 import Vue from 'vue';
-import Cookies from 'js-cookie';
 
 
-let cookieTokenKey = `${window.location.pathname}/token`;
-let storageTokenKey = `token@${window.location.hostname}:${window.location.port}${window.location.pathname}`;
+
+
 // let apiUrl = window.env.api.url || '';
 // 配置API接口地址
+let storageTokenKey = `token@${window.location.hostname}:${window.location.port}${window.location.pathname}`;
 let apiUrl = process.env.API_HOST;
+
 let NODE_ENV = process.env.NODE_ENV;
 if (NODE_ENV == "production") {
-    apiUrl = location.protocol + "//" + location.host + '/';
+    apiUrl = location.protocol + "//" + location.host;
 }
 
 let mergeUrl = function(url, params) {
@@ -30,30 +31,25 @@ let mergeUrl = function(url, params) {
 
 let api = {
     getToken() {
-        return Cookies.get(cookieTokenKey + '/access_token');
+        return window.localStorage.getItem(storageTokenKey + '/token');
     },
     /**
      * 设置 token
      * @param token [token_type, expires_in, access_token, refresh_token]
      */
     setToken(token) {
-        let accessToken = token.token_type + ' ' + token.access_token;
-        Cookies.set(cookieTokenKey + '/access_token', accessToken, {
-            expires: new Date().getTime() + token.expires_in * 1000
-        });
-        window.localStorage.setItem(storageTokenKey + '/refresh_token', token.refresh_token);
-        instance.defaults.headers['Authorization'] = accessToken;
+        window.localStorage.setItem(storageTokenKey + '/token', token);
+        instance.defaults.headers['token'] = token;
     },
     deleteToken() {
-        Cookies.remove(cookieTokenKey + '/access_token');
-        window.localStorage.removeItem(storageTokenKey + '/refresh_token');
-        delete instance.defaults.headers['Authorization'];
+        window.localStorage.removeItem(storageTokenKey + '/token');
+        delete instance.defaults.headers['token'];
     },
     post(url, data) {
         return instance({
             method: 'post',
             url: apiUrl + url,
-            data: qs.stringify(data),
+            data: data,
         });
     },
     get(url, params) {
@@ -88,12 +84,14 @@ let api = {
                 document.body.appendChild(link);
                 link.click();
             });
-    }
+    },
+    // apiUrl:NODE_ENV == "production"?apiUrl:'https://t.jiyuanet.com/wg/a/'
+    apiUrl: apiUrl
 };
 
 let instance = axios.create({
     headers: {
-        'Authorization': api.getToken() || ''
+        contentType: 'application/json;charset=UTF-8',
     }
 });
 instance.interceptors.request.use(config => {
@@ -102,15 +100,16 @@ instance.interceptors.request.use(config => {
 });
 instance.interceptors.response.use(response => {
     NProgress.done();
+    // 超时或未登录自动跳转到登录页面
+    if (response.data.code == 401) {
+        api.deleteToken();
+        window.location.href = '/'
+        return false;
+    }
     return response;
 }, error => {
     NProgress.done();
-    // 超时或未登录自动跳转到登录页面
-    if (error.response.status === 406 || error.response.status === 401) {
-        api.deleteToken();
-        Vue.bus.emit('prompt:login'); // 触发登录事件
-        return Promise.reject();
-    }
+
     return Promise.reject(error)
 });
 

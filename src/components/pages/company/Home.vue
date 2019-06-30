@@ -149,7 +149,7 @@ export default {
     return {};
   },
   mounted(){
-	  console.log(this.$api.getToken())
+	
   },
   methods:{
 	  

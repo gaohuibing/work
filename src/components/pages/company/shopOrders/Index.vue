@@ -147,7 +147,7 @@
             </div>
             <div class="len-g">
               <p style="color:#F76260">待付款</p>
-              <p style="color:#44B549">详情</p>
+              <p style="color:#44B549" @click="toDetails">详情</p>
               <p style="color:#1C1C1C">关闭交易</p>
               <p>
                 <el-button type="primary" size="mini">受理</el-button>
@@ -377,7 +377,7 @@ export default {
     };
   },
   mounted() {
-    this.queryId = this.$route.query.id;
+    this.queryId = this.$route.query.id?this.$route.query.id:'0';
   },
   methods: {
     tabHandle(id) {
@@ -387,6 +387,9 @@ export default {
           id: id
         }
       });
+    },
+    toDetails(){
+	    this.$router.push('/company/shop_orders/order_details')
     }
   },
   watch: {

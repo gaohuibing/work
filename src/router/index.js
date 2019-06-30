@@ -21,7 +21,7 @@ export default new Router({
             component: h =>
                 import ('@/components/pages/Layout.vue'),
             redirect: '/company',
-            // beforeEnter: requireAuth,
+            beforeEnter: requireAuth,
             children: [{
                 path: 'company',
                 component: h =>
@@ -65,15 +65,33 @@ export default new Router({
                         component: h =>
                             import ('@/components/pages/company/RouteBox'),
                         redirect: '/company/shop_orders/index',
-                        query: {
-                            id: 0
-                        },
-                        children: [{
-                            path: 'index',
-                            component: h =>
-                                import ('@/components/pages/company/shopOrders/Index'),
 
-                        }]
+                        children: [{
+                                path: 'index',
+                                component: h =>
+                                    import ('@/components/pages/company/shopOrders/Index'),
+
+
+                            },
+                            {
+                                path: 'order_details',
+                                component: h =>
+                                    import ('@/components/pages/company/shopOrders/OrderDetails'),
+
+                            },
+                            {
+                                path: 'after_sale',
+                                component: h =>
+                                    import ('@/components/pages/company/shopOrders/AfterSale'),
+
+                            },
+                            {
+                                path: 'after_sale_edit',
+                                component: h =>
+                                    import ('@/components/pages/company/shopOrders/AfterSaleEdit'),
+
+                            },
+                        ]
                     },
                     // 服务订单
                     {
@@ -144,6 +162,7 @@ export default new Router({
                         component: h =>
                             import ('@/components/pages/company/team/Team'),
                         redirect: '/company/team/user',
+
                         children: [
                             // 用户
                             {
@@ -151,6 +170,7 @@ export default new Router({
                                 component: h =>
                                     import ('@/components/pages/company/team/User'),
                             },
+
                             // 角色
                             {
                                 path: 'role',
@@ -158,6 +178,18 @@ export default new Router({
                                     import ('@/components/pages/company/team/Role'),
                             },
                         ]
+                    },
+                    // 添加/编辑用户
+                    {
+                        path: 'user_edit',
+                        component: h =>
+                            import ('@/components/pages/company/team/addUser'),
+                    },
+                    // 添加/编辑角色
+                    {
+                        path: 'role_edit',
+                        component: h =>
+                            import ('@/components/pages/company/team/addRole'),
                     },
                     // 地址管理
                     {

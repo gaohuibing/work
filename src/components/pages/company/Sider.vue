@@ -26,7 +26,7 @@ export default {
         },
         {
           name: "商品订单",
-	    path: "/company/shop_orders?id=0",
+	    path: "/company/shop_orders",
 	 
         },
         {
