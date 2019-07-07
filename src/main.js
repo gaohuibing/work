@@ -19,6 +19,7 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 import api from './utils/api';
+import common from './utils/common';
 
 import VueQuillEditor from 'vue-quill-editor'
 // require styles
@@ -26,6 +27,8 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+import PrettyCheckbox from 'pretty-checkbox-vue';
+Vue.use(PrettyCheckbox);
 Vue.use(VueQuillEditor, /* { default global options } */ )
 
 window.Vue = Vue;
@@ -45,6 +48,7 @@ let localStore = require('store');
 window.store = localStore;
 Object.defineProperty(Vue.prototype, '$moment', { value: moment });
 Object.defineProperty(Vue.prototype, '$api', { value: api });
+Object.defineProperty(Vue.prototype, '$common', { value: common });
 
 Vue.config.productionTip = false
 

@@ -9,11 +9,11 @@ import Vue from 'vue';
 // let apiUrl = window.env.api.url || '';
 // 配置API接口地址
 let storageTokenKey = `token@${window.location.hostname}:${window.location.port}${window.location.pathname}`;
-let apiUrl = process.env.API_HOST;
+let apiUrl = process.env.API_HOST + '/';
 
 let NODE_ENV = process.env.NODE_ENV;
 if (NODE_ENV == "production") {
-    apiUrl = location.protocol + "//" + location.host;
+    apiUrl = location.protocol + "//" + location.host + '/';
 }
 
 let mergeUrl = function(url, params) {

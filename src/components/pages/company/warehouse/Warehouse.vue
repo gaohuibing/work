@@ -125,7 +125,7 @@
         <el-button size="small">删除</el-button>
       </div>
       <div class="flex-grow pagi-wrap" v-if="goodLists.total-0>0">
-        <div>共{{goodLists.total}}条，每页{{filter.page}}条</div>
+        <div>共{{goodLists.total}}条，每页{{filter.limits}}条</div>
         <el-pagination
           background
           layout="prev, pager, next"
@@ -133,6 +133,7 @@
           :current-page="filter.page-0"
           :pager-count="5"
           :page-size="filter.limit-0"
+	     @current-change="handleCurrentChange"
         ></el-pagination>
         <div>
           到第
@@ -185,30 +186,8 @@ export default {
         page: 1,
         limits: 10
       },
-      multipleSelection: [], //选择的ids
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
-      value: "",
+      multipleSelection: [], //选择的ids     
+  
       goodLists: {
         data: [],
         total: ""
@@ -233,7 +212,7 @@ export default {
         this.multipleSelection = multipleSelection;
       }
       this.checkAll = length === this.goodLists.data.length;
-	this.isIndeterminate = length > 0 && length < this.goodLists.data.length;  	
+      this.isIndeterminate = length > 0 && length < this.goodLists.data.length;
     },
     copy(id) {},
     //删除数据
@@ -252,12 +231,12 @@ export default {
     },
     // 底部全选
     handleCheckAllChange(val) {
-	let idsArr=this.goodLists.data.map((item,index)=>{
-		return item.id
-	})
-	this.$refs.multipleTable.toggleAllSelection();
-      this.multipleSelection = val ? idsArr: [];
-	this.isIndeterminate = false;	
+      let idsArr = this.goodLists.data.map((item, index) => {
+        return item.id;
+      });
+      this.$refs.multipleTable.toggleAllSelection();
+      this.multipleSelection = val ? idsArr : [];
+      this.isIndeterminate = false;
     },
     toExport() {
       this.$router.push({
@@ -313,6 +292,12 @@ export default {
         .then(res => {
           if (res.data.code == 200) {
             this.goodsType = res.data.data;
+            // 避免父级id与子级id一样 无法渲染
+            this.goodsType.map((item, index) => {
+              item.second_sort.map((value, key) => {
+                value.id = value.id + value.father_id;
+              });
+            });
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -324,7 +309,7 @@ export default {
     //  商品分类选择
     handleGoodsTypeChange(data) {
       this.filter.first_sort = data[0];
-      this.filter.second_sort = data[1];
+      this.filter.second_sort = data[1]-data[0];
     },
     // 获取商品仓库列表
     getWarehouse() {
@@ -335,8 +320,7 @@ export default {
           if (res.data.code == 200) {
             this.goodLists.data = res.data.data.item;
             this.goodLists.total = res.data.data.total;
-            this.loading = false;
-            console.log(this.goodLists, "///////");
+            this.loading = false;           
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -354,7 +338,9 @@ export default {
         second_sort: "",
         price_type: "",
         min_price: "",
-        max_price: ""
+	  max_price: "",
+	  page:'1',
+	  limits:'10'
       };
       this.getWarehouse();
     },
@@ -362,7 +348,11 @@ export default {
     toPage() {
       this.filter.page = this.page;
       this.getWarehouse();
-    }
+    },
+     handleCurrentChange(page) {
+      this.filter.page = page;
+      this.getWarehouse();
+    },
   }
 };
 </script>

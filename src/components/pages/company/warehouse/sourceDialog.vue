@@ -42,7 +42,7 @@
             <li>分组一</li>
           </ul>
         </div>
-        <div class="source-main">
+        <div class="source-main" v-loading="loading">
           <ul class="s-main clearfix">
             <template v-for="(item,index) in goodsImgs.data">
               <li @click="itemHandle(index)" :key="index">
@@ -57,7 +57,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="currentVisible = false">取 消</el-button>
-        <el-button type="primary" @click="currentVisible = false">确 定</el-button>
+        <el-button type="primary" @click="selectSubmit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -65,7 +65,7 @@
 
 <script>
 export default {
-  props: ["visible"],
+  props: ["visible", "goodsImgsSelect"],
   data() {
     return {
       apiUrl: this.$api.apiUrl + "merchant/upload_material",
@@ -79,17 +79,23 @@ export default {
         data: [],
         total: ""
       },
-      value: ""
+      currentGoodsImgsSelect: [],
+      value: "",
+      loading: true
     };
   },
   mounted() {
     this.getSourceData();
   },
   methods: {
-    beforeUpload() {},
+    beforeUpload() {
+      this.loading = true;
+    },
     uploadSuccess(response, file, fileList) {
       this.goodsImgs.data.push({ pic_path: response.data, select: false });
+      // this.getSourceData();
     },
+    // 获取素材
     getSourceData() {
       this.$api
         .get("merchant/material_management", this.filter)
@@ -97,9 +103,7 @@ export default {
           if (res.data.code == 200) {
             this.goodsImgs.data = res.data.data.item;
             this.goodsImgs.total = res.data.data.total;
-            this.goodsImgs.data.map((item, index) => {
-              item.select = false;
-            });
+            this.loading = false;
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -108,9 +112,25 @@ export default {
           this.$message.error({ message: err });
         });
     },
+    // 选择图片
     itemHandle(index) {
-	    console.log(index)
-      this.goodsImgs.data[index].select = !this.goodsImgs.data[index].select;
+      let data = JSON.parse(JSON.stringify(this.goodsImgs.data));
+      data.map((item, key) => {
+        if (key == index) {
+          item.select = !item.select;
+        }
+      });
+      this.goodsImgs.data = data;
+    },
+    selectSubmit() {
+      let imgsArr = [];
+      this.goodsImgs.data.map((item, index) => {
+        if (item.select) {
+          imgsArr.push(item);
+        }
+        this.$emit("update:goodsImgsSelect", imgsArr);
+      });
+      this.currentVisible = false;
     }
   },
   watch: {
@@ -119,6 +139,20 @@ export default {
     },
     currentVisible(v) {
       this.$emit("update:visible", v);
+    },
+    goodsImgsSelect(v) {
+      this.currentGoodsImgsSelect = v;
+      console.log(v, "???");
+      // this.getSourceData()
+      let imgs = JSON.parse(JSON.stringify(this.goodsImgs.data));
+
+      // v.map((value, key) => {
+      //   imgs.map((item, index) => {
+      //     item.select = false;
+      //     item=value
+      //   });
+      // });
+      // this.goodsImgs.data = imgs;
     }
   }
 };
@@ -180,6 +214,7 @@ export default {
   position: relative;
   float: left;
   margin-right: 10px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 .source-main .s-main li img {

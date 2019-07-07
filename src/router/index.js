@@ -232,6 +232,11 @@ export default new Router({
                     },
                 ]
             }]
+        },
+        {
+            path: '/test',
+            component: h =>
+                import ('@/components/pages/test')
         }
     ]
 })

@@ -8,7 +8,7 @@
 export default {
   mounted() {
     if (this.$api.getToken()) {
-      this.$store.dispatch("getGoodsType");
+      // this.$store.dispatch("getGoodsType");
     }
   },
   data() {

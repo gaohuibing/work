@@ -2,7 +2,7 @@
   <div class="app-header">
     <div class="clearfix" style="width:1198px;margin:0 auto;">
       <div class="logo">
-        <img src="../../assets/images/logo.png" alt>
+        <img src="../../assets/images/logo.png" alt />
       </div>
       <template v-if="isLogin">
         <div class="nav">
@@ -30,6 +30,10 @@
               {{item.name}}
               <span v-if="item.name=='消息'">1</span>
             </router-link>
+            <li @click="editHandle">
+              <i class="el-icon-switch-button"></i>
+              退出
+            </li>
           </ul>
         </div>
       </template>
@@ -73,11 +77,6 @@ export default {
           name: "帮助",
           icon: "",
           url: "/support"
-        },
-        {
-          name: "退出",
-          icon: "el-icon-switch-button",
-          url: "/exit"
         }
       ],
       isLogin: false
@@ -89,6 +88,20 @@ export default {
       this.isLogin = true;
     } else {
       this.isLogin = false;
+    }
+  },
+  methods: {
+    editHandle() {
+      this.$confirm("您即将退出登录, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$api.deleteToken();
+          window.location.href = "/";
+        })
+        .catch(() => {});
     }
   }
 };

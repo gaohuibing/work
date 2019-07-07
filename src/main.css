@@ -470,9 +470,9 @@ a {
 }
 
 .inp-tips {
-    color: #F76260;
+    color: #666;
     margin-left: 10px;
-    font-size: 12px
+    font-size: 12px;
 }
 
 .filters .lab {
@@ -545,7 +545,8 @@ a {
 .form-group {
     display: flex;
     line-height: 32px;
-    margin-bottom: 20px
+    margin-bottom: 20px;
+    align-items: center
 }
 
 .form-group .f-label {
@@ -675,4 +676,17 @@ a {
 .sourcebox .el-dialog__body {
     padding-top: 0;
     padding-bottom: 0
+}
+
+.el-form-item {
+    margin: 0
+}
+
+.modeltable {
+    width: 100%;
+    border: 1px solid #E0E0E0
+}
+
+.pretty {
+    margin-right: 5px!important
 }

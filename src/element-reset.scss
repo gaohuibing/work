@@ -1,5 +1,6 @@
 /* 改变主题色变量 */
 
+@import '~pretty-checkbox/src/pretty-checkbox.scss';
 $--color-primary: #44B549;
 
 /* 改变 icon 字体路径变量，必需 */
@@ -30,41 +31,37 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
     line-height: 32px
 }
 
-.el-table--border td,
-.el-table--border th,
-.el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
-    border: none
-}
-
-.el-table--border,
-.el-table--group {
-    border: none
-}
-
-.el-table::before {
-    height: 0;
-}
-
-.el-table thead tr th {
-    background: #F6F7FF;
-    border-top: 1px solid rgba(231, 231, 235, 1);
-    border-bottom: 1px solid rgba(231, 231, 235, 1);
-}
-
-.el-table th>.cell {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(28, 28, 28, 1);
-}
-
-.el-table td {
-    padding: 9px 0
-}
-
-.el-table td .cell {
-    padding: 0;
-    color: #1C1C1C;
-    font-size: 14px
+.table-content {
+    .el-table--border td,
+    .el-table--border th,
+    .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+        border: none
+    }
+    .el-table--border,
+    .el-table--group {
+        border: none
+    }
+    .el-table::before {
+        height: 0;
+    }
+    .el-table thead tr th {
+        background: #F6F7FF;
+        border-top: 1px solid rgba(231, 231, 235, 1);
+        border-bottom: 1px solid rgba(231, 231, 235, 1);
+    }
+    .el-table th>.cell {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(28, 28, 28, 1);
+    }
+    .el-table td {
+        padding: 9px 0
+    }
+    .el-table td .cell {
+        //   padding: 0;
+        color: #1C1C1C;
+        font-size: 14px
+    }
 }
 
 .el-message-box {
