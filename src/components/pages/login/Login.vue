@@ -2,18 +2,18 @@
   <div class="login">
     <form>
       <div class="login-item">
-        <img src="../../../assets/images/user.png" alt class="x-icon">
+        <img src="../../../assets/images/user.png" alt class="x-icon" />
         <el-input v-model="mobile" placeholder="请输入手机号"></el-input>
       </div>
       <div class="login-item">
-        <img src="../../../assets/images/pwd.png" alt class="x-icon">
+        <img src="../../../assets/images/pwd.png" alt class="x-icon" />
         <el-input placeholder="请输入密码" v-model="password" show-password></el-input>
       </div>
       <div class="login-item">
-        <img src="../../../assets/images/code.png" alt class="x-icon">
+        <img src="../../../assets/images/code.png" alt class="x-icon" />
         <el-input placeholder="请输入验证码" v-model="captcha" style="width:140px"></el-input>
         <div class="getcode" @click="getImgCode">
-          <img :src="imgCode" alt style="width:100%;height:100%">
+          <img :src="imgCode" alt style="width:100%;height:100%" />
         </div>
       </div>
       <div class>
@@ -94,7 +94,27 @@ export default {
             if (this.checked) {
               store.set("username", this.mobile);
             }
-            window.location.href = "/";
+            this.getUserInfo(token);
+          } else {
+            this.$message.error({ message: res.data.msg });
+          }
+        })
+        .catch(err => {
+          this.$message.error({ message: err });
+        });
+    },
+    getUserInfo(token) {
+      this.$api
+        .get("user/get_user", {
+          api_token: token        
+        })
+        .then(res => {
+          if (res.data.code == 200) {
+		let userInfo=res.data.data;
+		store.set('userInfo',userInfo);   
+            setTimeout(h => {
+              window.location.href = "/";
+            });
           } else {
             this.$message.error({ message: res.data.msg });
           }

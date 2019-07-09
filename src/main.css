@@ -391,11 +391,6 @@ a {
 .main {
     width: 1200px;
     margin: 0 auto;
-    position: absolute;
-    top: 98px;
-    bottom: 30px;
-    left: 50%;
-    margin-left: -600px
 }
 
 .content {
@@ -406,12 +401,11 @@ a {
 .wrap {
     width: 998px;
     float: left;
-    /* min-height: 800px; */
-    overflow-y: auto;
+    min-height: 800px;
+    /* overflow-y: auto; */
     border-left: 1px solid #E7E7EB;
     padding: 0 16px;
     position: relative;
-    overflow-y: auto
 }
 
 .sider {
@@ -689,4 +683,12 @@ a {
 
 .pretty {
     margin-right: 5px!important
+}
+
+
+/*tooltip*/
+
+.el-tooltip__popper.is-light {
+    background: rgba(255, 245, 243, 1);
+    border-color: #B13322
 }

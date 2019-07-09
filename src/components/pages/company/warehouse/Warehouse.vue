@@ -78,8 +78,8 @@
               </div>
               <div class="info">
                 <h5>{{scope.row.goods_name}}</h5>
-                <p class="market-price">市场价：¥{{scope.row.market_price}}</p>
-                <p class="normal-price">成本价：¥{{scope.row.cost_price}}</p>
+                <p class="market-price">市场价：¥{{scope.row.s_market_price}}</p>
+                <p class="normal-price">成本价：¥{{scope.row.s_cost_price}}</p>
               </div>
             </div>
           </template>
@@ -87,8 +87,8 @@
         <el-table-column label="分类" align="center">
           <template slot-scope="scope">{{scope.row.first_sort}} / {{scope.row.second_sort}}</template>
         </el-table-column>
-        <el-table-column prop="sell_price" label="销售价" align="center"></el-table-column>
-        <el-table-column prop="stock" label="库存" align="center"></el-table-column>
+        <el-table-column prop="s_sell_price" label="销售价" align="center"></el-table-column>
+        <el-table-column prop="s_stock" label="库存" align="center"></el-table-column>
         <el-table-column label="浏览/销量" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.view_num}}/{{scope.row.sell_num}}</span>
@@ -101,7 +101,7 @@
             {{$moment(scope.row.updated_at?scope.row.updated_at:scope.row.created_at).format('YYYY-MM-DD HH:mm:ss').split(' ')[1]}}
           </template>
         </el-table-column>
-        <el-table-column prop="date" label="操作" align="center" width="150">
+        <el-table-column prop="date" label="操作" align="center" width="180">
           <template slot-scope="scope">
             <a @click.prevent="copy(scope.row.id)" style="padding:0 7px;cursor: pointer">复制</a>
             <a @click.prevent style="padding:0 7px;color:#44B549;cursor: pointer">编辑</a>
@@ -121,7 +121,32 @@
           v-model="checkAll"
           @change="handleCheckAllChange"
         >全选</el-checkbox>
-        <el-button size="small">加入下载</el-button>
+        <el-popover
+          placement="top"
+          title="加入下载"
+          width="400"
+          trigger="click"
+          v-model="dvisilbe"
+          style="margin:0 10px"
+        >
+          <div class="downitem">
+            <span>选择分组：</span>
+            <el-select v-model="planId" placeholder="请选择" style="width:200px;margin:0 10px">
+              <el-option
+                v-for="item in planList.data"
+                :key="item.id"
+                :label="item.plan_name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+            <a style="color:#69c46d;cursor:pointer" @click="visible = true">新建</a>
+          </div>
+          <div class="botd-tools" style="text-align:center;margin:20px 0">
+            <el-button type="primary" @click="downloadConfirm" size="small">确定</el-button>
+            <el-button @click="dvisilbe=false" size="small">取消</el-button>
+          </div>
+          <el-button slot="reference" size="small">加入下载</el-button>
+        </el-popover>
         <el-button size="small">删除</el-button>
       </div>
       <div class="flex-grow pagi-wrap" v-if="goodLists.total-0>0">
@@ -133,7 +158,7 @@
           :current-page="filter.page-0"
           :pager-count="5"
           :page-size="filter.limit-0"
-	     @current-change="handleCurrentChange"
+          @current-change="handleCurrentChange"
         ></el-pagination>
         <div>
           到第
@@ -142,9 +167,12 @@
         </div>
       </div>
     </div>
+    <!-- // 添加方案 -->
+    <painDialog :visible.sync="visible"></painDialog>
   </div>
 </template>
 <script>
+import painDialog from "../download/planDialog";
 const GOODS_TYPE = {
   "1": "实体商品",
   "2": "虚拟商品"
@@ -153,7 +181,12 @@ export default {
   mounted() {
     this.getGoodsType();
     this.getWarehouse();
+    this.loadPlanList();
+    this.$bus.$on("upload:painList", h => {
+      this.loadPlanList();
+    });
   },
+  components: { painDialog },
   data() {
     return {
       GOODS_TYPE: GOODS_TYPE,
@@ -186,8 +219,8 @@ export default {
         page: 1,
         limits: 10
       },
-      multipleSelection: [], //选择的ids     
-  
+      multipleSelection: [], //选择的ids
+
       goodLists: {
         data: [],
         total: ""
@@ -195,12 +228,20 @@ export default {
       isIndeterminate: false,
       checkAll: false,
       page: "",
-      loading: true
+      loading: true,
+      planList: {
+        data: [],
+        total: ""
+      },
+      planId: "",
+	dvisilbe: false,
+	visible:false
     };
   },
 
   methods: {
     modifyHandle() {},
+    // 表格中全选
     handleSelectionChange(data) {
       let length = data.length;
       let multipleSelection = data.map(item => {
@@ -243,6 +284,7 @@ export default {
         path: "/company/warehouse/export"
       });
     },
+    // 上传商品
     addHandle() {
       this.toEdit();
     },
@@ -309,7 +351,7 @@ export default {
     //  商品分类选择
     handleGoodsTypeChange(data) {
       this.filter.first_sort = data[0];
-      this.filter.second_sort = data[1]-data[0];
+      this.filter.second_sort = data[1] - data[0];
     },
     // 获取商品仓库列表
     getWarehouse() {
@@ -320,7 +362,7 @@ export default {
           if (res.data.code == 200) {
             this.goodLists.data = res.data.data.item;
             this.goodLists.total = res.data.data.total;
-            this.loading = false;           
+            this.loading = false;
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -338,9 +380,9 @@ export default {
         second_sort: "",
         price_type: "",
         min_price: "",
-	  max_price: "",
-	  page:'1',
-	  limits:'10'
+        max_price: "",
+        page: "1",
+        limits: "10"
       };
       this.getWarehouse();
     },
@@ -349,10 +391,69 @@ export default {
       this.filter.page = this.page;
       this.getWarehouse();
     },
-     handleCurrentChange(page) {
+    handleCurrentChange(page) {
       this.filter.page = page;
       this.getWarehouse();
     },
+    // 下载方案列表
+    loadPlanList() {
+      this.$api
+        .get("merchant/plan_list", {
+          api_token: this.filter.api_token,
+          page: 1,
+          limits: 50
+        })
+        .then(res => {
+          if (res.data.code == 200) {
+            this.planList.data = res.data.data.item;
+            this.planList.total = res.data.data.total;
+            this.loading = false;
+          } else {
+            this.$message.error({ message: res.data.msg });
+          }
+        })
+        .catch(err => {
+          this.$message.error({ message: err });
+        });
+    },
+    // 确定添加下载
+    downloadConfirm() {
+      if (this.multipleSelection.length < 1) {
+        this.$message.error("请至少选择一个商品");
+        return false;
+      }
+      if (!this.planId) {
+        this.$message.error("请选择下载方案");
+        return false;
+      }
+      this.$api
+        .get("merchant/add_plan_list", {
+          api_token: this.filter.api_token,
+          plan_id: this.planId,
+          goods_id: this.multipleSelection.join(",")
+        })
+        .then(res => {
+          if (res.data.code == 200) {
+            this.$message({
+              message: "操作成功",
+              type: "success"
+            });
+            this.dvisilbe = false;
+            this.multipleSelection = [];
+          } else {
+            this.$message.error({ message: res.data.msg });
+          }
+        })
+        .catch(err => {
+          this.$message.error({ message: err });
+        });
+    },
+    addPlan() {}
+  },
+  watch: {
+    multipleSelection(v) {
+      console.log(v);
+    }
   }
 };
 </script>
@@ -395,5 +496,12 @@ export default {
   line-height: 32px;
   padding: 0 15px;
   font-size: 14px;
+}
+.downitem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin: 20px 0;
+  margin-top: 40px;
 }
 </style>

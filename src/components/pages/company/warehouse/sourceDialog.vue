@@ -65,7 +65,7 @@
 
 <script>
 export default {
-  props: ["visible", "goodsImgsSelect"],
+  props: ["visible", "imgProps", "goodsImgsSelect"],
   data() {
     return {
       apiUrl: this.$api.apiUrl + "merchant/upload_material",
@@ -75,6 +75,7 @@ export default {
         limits: 20,
         api_token: this.$api.getToken()
       },
+      ifAdd: true,
       goodsImgs: {
         data: [],
         total: ""
@@ -114,13 +115,34 @@ export default {
     },
     // 选择图片
     itemHandle(index) {
-      let data = JSON.parse(JSON.stringify(this.goodsImgs.data));
-      data.map((item, key) => {
-        if (key == index) {
-          item.select = !item.select;
+      if (!this.goodsImgs.data[index].select) {
+        if (this.ifAdd) {
+          let data = JSON.parse(JSON.stringify(this.goodsImgs.data));
+
+          data.map((item, key) => {
+            if (key == index) {
+              item.select = !item.select;
+            }
+          });
+          this.goodsImgs.data = data;
+          let selectLen = this.goodsImgs.data.filter(item => item.select)
+            .length;
+          if (selectLen + this.goodsImgsSelect.length == 5) {
+            this.ifAdd = false;
+          }
+        } else {
+          this.$message.error("选择图片不能超过5张");
         }
-      });
-      this.goodsImgs.data = data;
+      } else {
+        let data = JSON.parse(JSON.stringify(this.goodsImgs.data));
+        data.map((item, key) => {
+          if (key == index) {
+            item.select = !item.select;
+          }
+        });
+        this.goodsImgs.data = data;
+        this.ifAdd = true;
+      }
     },
     selectSubmit() {
       let imgsArr = [];
@@ -128,31 +150,26 @@ export default {
         if (item.select) {
           imgsArr.push(item);
         }
-        this.$emit("update:goodsImgsSelect", imgsArr);
+        this.$emit("update:imgProps", imgsArr);
       });
       this.currentVisible = false;
     }
   },
   watch: {
     visible(v) {
+      if (v) {
+        let imgs = JSON.parse(JSON.stringify(this.goodsImgs.data));
+
+        imgs.map((item, index) => {
+          item.select = false;
+        });
+        this.goodsImgs.data = imgs;
+      }
       this.currentVisible = v;
+      this.ifAdd = true;
     },
     currentVisible(v) {
       this.$emit("update:visible", v);
-    },
-    goodsImgsSelect(v) {
-      this.currentGoodsImgsSelect = v;
-      console.log(v, "???");
-      // this.getSourceData()
-      let imgs = JSON.parse(JSON.stringify(this.goodsImgs.data));
-
-      // v.map((value, key) => {
-      //   imgs.map((item, index) => {
-      //     item.select = false;
-      //     item=value
-      //   });
-      // });
-      // this.goodsImgs.data = imgs;
     }
   }
 };

@@ -41,9 +41,11 @@ let api = {
         window.localStorage.setItem(storageTokenKey + '/token', token);
         instance.defaults.headers['token'] = token;
     },
+
     deleteToken() {
         window.localStorage.removeItem(storageTokenKey + '/token');
         delete instance.defaults.headers['token'];
+        store.remove('userInfo');
     },
     post(url, data) {
         return instance({
