@@ -104,7 +104,10 @@
         <el-table-column prop="date" label="操作" align="center" width="180">
           <template slot-scope="scope">
             <a @click.prevent="copy(scope.row.id)" style="padding:0 7px;cursor: pointer">复制</a>
-            <a @click.prevent style="padding:0 7px;color:#44B549;cursor: pointer">编辑</a>
+            <a
+              @click.prevent="editHandle(scope.row.id)"
+              style="padding:0 7px;color:#44B549;cursor: pointer"
+            >编辑</a>
             <a
               @click.prevent="delHandle(scope.row.id)"
               style="padding:0 7px;color:#999;cursor: pointer"
@@ -147,7 +150,7 @@
           </div>
           <el-button slot="reference" size="small">加入下载</el-button>
         </el-popover>
-        <el-button size="small">删除</el-button>
+        <el-button size="small" @click="delHandle(multipleSelection.join(','))">删除</el-button>
       </div>
       <div class="flex-grow pagi-wrap" v-if="goodLists.total-0>0">
         <div>共{{goodLists.total}}条，每页{{filter.limits}}条</div>
@@ -234,8 +237,8 @@ export default {
         total: ""
       },
       planId: "",
-	dvisilbe: false,
-	visible:false
+      dvisilbe: false,
+      visible: false
     };
   },
 
@@ -255,9 +258,31 @@ export default {
       this.checkAll = length === this.goodLists.data.length;
       this.isIndeterminate = length > 0 && length < this.goodLists.data.length;
     },
-    copy(id) {},
+    copy(id) {
+      this.loading = true;
+      let goodsId = id - 0;
+      this.$api
+        .post("merchant/copy_goods", {
+          api_token: this.$api.getToken(),
+          goods_id: goodsId
+        })
+        .then(res => {
+          if (res.data.code == 200) {
+            this.$message({
+              message: "复制成功",
+              type: "success"
+            });
+            this.getWarehouse();
+          } else {
+            this.$message.error({ message: res.data.msg });
+          }
+        })
+        .catch(err => {
+          this.$message.error({ message: err });
+        });
+    },
     //删除数据
-    delHandle(id) {
+    delHandle(ids) {
       this.$confirm(
         "您所选商品有正在被活动使用，如确定 删除，活动中的商品也将被强制删除， 并且不可恢复?",
         "确定删除!",
@@ -268,7 +293,27 @@ export default {
           showClose: false,
           width: "271"
         }
-      ).then(() => {});
+      ).then(() => {
+        this.$api
+          .post("merchant/delete_goods", {
+            api_token: this.$api.getToken(),
+            goods_id: ids + ""
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              this.$message({
+                message: "删除成功",
+                type: "success"
+              });
+              this.getWarehouse();
+            } else {
+              this.$message.error({ message: res.data.msg });
+            }
+          })
+          .catch(err => {
+            this.$message.error({ message: err });
+          });
+      });
     },
     // 底部全选
     handleCheckAllChange(val) {
@@ -448,7 +493,16 @@ export default {
           this.$message.error({ message: err });
         });
     },
-    addPlan() {}
+    addPlan() {},
+    // 编辑
+    editHandle(id) {
+      this.$router.push({
+        path: "/company/warehouse/edit",
+        query: {
+          goodsId: id
+        }
+      });
+    }
   },
   watch: {
     multipleSelection(v) {

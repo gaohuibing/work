@@ -112,11 +112,13 @@
             </div>
 
             <div class="dingzhi">
-              <el-input
-                placeholder="发货时间"
-                style="width:224px;margin-right:8px"
-                v-model="formData.s_deliver"
-              ></el-input>个小时发货
+              <el-form-item prop="s_deliver">
+                <el-input
+                  placeholder="发货时间"
+                  style="width:224px;margin-right:8px"
+                  v-model="formData.s_deliver"
+                ></el-input>个小时发货
+              </el-form-item>
             </div>
           </div>
 
@@ -127,7 +129,7 @@
               库存量
             </div>
             <div class="inp-box">
-              <el-form-item prop="stock">
+              <el-form-item prop="s_stock">
                 <el-input placeholder="请输入库存数量" v-model="formData.s_stock"></el-input>
               </el-form-item>
             </div>
@@ -140,7 +142,7 @@
               起订量
             </div>
             <div class="inp-box">
-              <el-form-item prop="min_order">
+              <el-form-item prop="s_min_order">
                 <el-input placeholder="请输入起订量" v-model="formData.s_min_order"></el-input>
               </el-form-item>
             </div>
@@ -168,10 +170,9 @@
               <template slot-scope="scope">
                 {{scope.row.regionLabel}}
                 <a
-                  v-if="!scope.row.regionLabel"
                   @click.prevent="editRegion(scope.row,'1')"
                   style="color:#44B549"
-                >添加地区</a>
+                >编辑</a>
               </template>
             </el-table-column>
 
@@ -337,7 +338,12 @@
             </div>
 
             <div class="dingzhi">
-              <el-form-item prop="m_deliver">
+              <el-form-item
+                prop="m_deliver"
+                :rules="[
+      { required: is_supplier=='1'&&formData.sales_mode=='2', message: '请输入发货时间', trigger: 'blur' }     
+    ]"
+              >
                 <el-input
                   placeholder="发货时间"
                   style="width:224px;margin-right:8px"
@@ -354,7 +360,12 @@
               库存量
             </div>
             <div class="inp-box">
-              <el-form-item prop="m_stock">
+              <el-form-item
+                prop="m_stock"
+                :rules="[
+      { required: is_supplier=='1'&&formData.sales_mode=='2', message: '请输入库存数量', trigger: 'blur' }     
+    ]"
+              >
                 <el-input placeholder="请输入库存数量" v-model="formData.m_stock"></el-input>
               </el-form-item>
             </div>
@@ -367,7 +378,12 @@
               起订量
             </div>
             <div class="inp-box">
-              <el-form-item prop="m_min_order">
+              <el-form-item
+                prop="m_min_order"
+                :rules="[
+      { required: is_supplier=='1'&&formData.sales_mode=='2', message: '请输入起订量', trigger: 'blur' }     
+    ]"
+              >
                 <el-input placeholder="请输入起订量" v-model="formData.m_min_order"></el-input>
               </el-form-item>
             </div>
@@ -395,10 +411,9 @@
               <template slot-scope="scope">
                 {{scope.row.regionLabel}}
                 <a
-                  v-if="!scope.row.regionLabel"
                   @click.prevent="editRegion(scope.row,'2')"
                   style="color:#44B549"
-                >添加地区</a>
+                >编辑</a>
               </template>
             </el-table-column>
 
@@ -539,6 +554,10 @@
                 <i class="el-icon-plus avatar-uploader-icon"></i>
               </li>
             </ul>
+            <p
+              style="color:#999;text-align:left;margin-bottom:20px;padding-left:194px"
+            >备注：默认第一张为主图，最多5张</p>
+            <p style="color:#44B549;text-align:center;margin-bottom:20px">1：1尺寸不大于750像素，主图必须上传</p>
           </div>
           <!---->
         </div>
@@ -561,7 +580,7 @@
     <div class="bot-tools-t" style="position:static">
       <el-button type="primary" @click="submitHandle('ruleForm')">确定</el-button>
       <el-button>取消</el-button>
-      <el-button type="primary" plain>预览</el-button>
+      <el-button type="primary" plain @click="previewHandle">预览</el-button>
     </div>
     <!-- // 图片素材 -->
     <source-dialog
@@ -573,6 +592,8 @@
     <region-dialog :regionVisible.sync="regionVisible" :regionValue.sync="regionValue"></region-dialog>
     <!-- 运费选择 -->
     <deliver-dialog :deliverVisible.sync="deliverVisible" :deliverForm.sync="deliverForm"></deliver-dialog>
+    <!-- 预览 -->
+    <preview-dialog :previewVisble.sync="previewVisble" :previewData="previewData"></preview-dialog>
   </div>
 </template>
 <script>
@@ -583,13 +604,25 @@ import { quillRedefine } from "vue-quill-editor-upload";
 
 import regionDialog from "./RegionDialog";
 import deliverDialog from "./DeliverDialog";
+import PreviewDialog from "./PreviewDialog";
 export default {
-  components: { SourceDialog, quillRedefine, regionDialog, deliverDialog },
+  components: {
+    SourceDialog,
+    quillRedefine,
+    regionDialog,
+    deliverDialog,
+    PreviewDialog
+  },
   data() {
     return {
       apiUrl: this.$api.apiUrl + "merchant/upload_goods_detail",
       defaulProps: { multiple: true },
       is_supplier: store.get("userInfo").is_supplier,
+      ruleForm: {
+        m_stock: "",
+        m_min_order: "",
+        m_deliver: ""
+      },
       rules: {
         goods_brand: [
           { required: true, message: "请输入品牌名称", trigger: "blur" }
@@ -608,15 +641,6 @@ export default {
           { required: true, message: "请输入起订量", trigger: "blur" }
         ],
         s_deliver: [
-          { required: true, message: "请输入发货时间", trigger: "blur" }
-        ],
-        m_stock: [
-          { required: true, message: "请输入商品库存", trigger: "blur" }
-        ],
-        m_min_order: [
-          { required: true, message: "请输入起订量", trigger: "blur" }
-        ],
-        m_deliver: [
           { required: true, message: "请输入发货时间", trigger: "blur" }
         ]
       },
@@ -673,8 +697,9 @@ export default {
       editorOption: {
         // some quill options
       },
-
+      // 已有的
       goodsImgsSelect: [],
+      // 子组件传回来的
       imgProps: [],
       // 自营运费列表
       selfPostageData: [],
@@ -692,7 +717,9 @@ export default {
       visible8: false,
       regionVisible: false,
       loading: false,
-      priceType: "" //1 自营 2 分销
+      priceType: "", //1 自营 2 分销,
+      previewVisble: false,
+      previewData: ""
     };
   },
   computed: {
@@ -722,6 +749,7 @@ export default {
   },
   mounted() {
     this.getGoodsType();
+    this.loadQueryData();
   },
   methods: {
     // 分类选择
@@ -730,7 +758,7 @@ export default {
       this.formData.second_sort = value[1] - value[0];
     },
 
-    // 素材弹窗
+    // 添加图片
     imgsDialogHandle() {
       if (this.goodsImgsSelect.length < 5) {
         this.visible = true;
@@ -822,15 +850,15 @@ export default {
       this.priceType = priceType;
       this.selfAddId = row.unique_id ? row.unique_id : row.addId;
       this.deliverForm = {
-        postage: row.postage,
+        postage: row.postage + "",
         first_piece: row.first_piece,
         more_piece: row.more_piece
       };
+
       this.deliverVisible = true;
     },
     // 保存
     submitHandle(formName) {
-      this.loading = true;
       this.formData.self_postage = this.selfPostageData;
       this.formData.market_postage = this.marketPostage;
 
@@ -839,9 +867,30 @@ export default {
           //     this.formData.s_cost_price = (this.formData.s_cost_price - 0).toFixed(2);
           //     this.formData.s_sell_price = (this.formData.s_sell_price - 0).toFixed(2);
           //     this.formData.s_market_price = (this.formData.s_market_price - 0).toFixed(2);
+          if (!this.selfPostageData.length) {
+            this.$message.error({ message: "请设置自营销售价格" });
+            return false;
+          }
+          if (
+            !this.marketPostage.length &&
+            this.is_supplier == "1" &&
+            this.formData.sales_mode == "2"
+          ) {
+            this.$message.error({ message: "请设置市场销售价格" });
+            return false;
+          }
           this.formData.pic_paths = this.goodsImgsSelect.map(
             (item, index) => item.pic_path
           );
+          if (this.formData.pic_paths == "") {
+            this.$message.error({ message: "请上传商品图片" });
+            return false;
+          }
+          if (this.formData.goods_detail == "") {
+            this.$message.error({ message: "请上传商品图片" });
+            return false;
+          }
+          this.loading = true;
           this.$api
             .post("merchant/upload_goods", this.formData)
             .then(res => {
@@ -863,9 +912,125 @@ export default {
             });
         } else {
           this.$message.error("请将信息填写完整");
+          this.loading = false;
           return false;
         }
       });
+    },
+    // 路由带有query(编辑，第三方导入)
+    loadQueryData() {
+      //     处理从第三方导入过来时的情况
+      if (this.$route.query.isExport) {
+        let query = this.$route.query;
+        let imgs = JSON.parse(this.$common.getUrlKey("goodsImgs"));
+        imgs.map(item => {
+          this.goodsImgsSelect.push({
+            pic_path: item
+          });
+        });
+        this.formData.goods_name = query.goodsName;
+        this.formData.share_describe = query.description;
+        this.formData.goods_detail = query.goodsDetail;
+      }
+      // 处理编辑
+      if (this.$route.query.goodsId) {
+        this.loading = true;
+        this.$api
+          .get("merchant/get_goods", {
+            api_token: this.$api.getToken(),
+            goods_id: this.$route.query.goodsId
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              let keys = Object.keys(this.formData);
+              keys.map(key => {
+                this.formData[key] = res.data.data.item[key]
+                  ? res.data.data.item[key] + ""
+                  : this.formData[key]; // int转string
+              });
+
+              res.data.data.goods_pic.map(item => {
+                this.goodsImgsSelect.push({
+                  pic_path: item
+                });
+              });
+              this.goodsTypeSelect = [
+                this.formData.first_sort - 0,
+                this.formData.first_sort - 0 + (this.formData.second_sort - 0)
+              ];
+              let selfPostageData = res.data.data.self_postage;
+              let marketPostage = res.data.data.market_postage;
+              //   自营销售价格
+              selfPostageData.map(self => {
+                self.s_cost_price = this.formData.s_cost_price;
+                self.s_sell_price = this.formData.s_sell_price;
+                self.s_market_price = this.formData.s_market_price;
+                self.s_mem_price = this.formData.s_mem_price;
+                let arr = self.region.split(",");
+                let result = [];
+                arr.map((bj, bjindex) => {
+                  this.regionData.find(item => {
+                    item.value == bj ? result.push(item.label) : "";
+                  });
+                  this.regionData.map((region, reginindex) => {
+                    if (region.children) {
+                      region.children.find(item => {
+                        item.value == bj ? result.push(item.label) : "";
+                      });
+                    }
+                  });
+                });
+                self.regionLabel = result.join(",");
+              });
+              //   市场销售价格
+              marketPostage.map(self => {
+                self.m_cost_price = this.formData.m_cost_price;
+                self.m_market_price = this.formData.m_market_price;
+                self.m_wholesale_price = this.formData.m_wholesale_price;
+                self.dist_price = this.formData.m_wholesale_price;
+                let arr = self.region.split(",");
+                let result = [];
+                arr.map((bj, bjindex) => {
+                  this.regionData.find(item => {
+                    item.value == bj ? result.push(item.label) : "";
+                  });
+                  this.regionData.map((region, reginindex) => {
+                    if (region.children) {
+                      region.children.find(item => {
+                        item.value == bj ? result.push(item.label) : "";
+                      });
+                    }
+                  });
+                });
+                self.regionLabel = result.join(",");
+              });
+              this.selfPostageData = selfPostageData;
+              this.marketPostage = marketPostage;
+              //富文本编辑器神坑处理
+              this.$nextTick(function() {
+                this.$refs.myQuillEditor.quill.enable(true);
+                this.$refs.myQuillEditor.quill.blur();
+                document.body.scrollTop = 0;
+                document.getElementById("wrap").scrollTop = 0;
+              });
+              this.loading = false;
+            } else {
+              this.$message.error({ message: res.data.msg });
+            }
+          })
+          .catch(err => {
+            this.$message.error({ message: err });
+          });
+      }
+    },
+    // 预览
+    previewHandle() {
+	this.formData.pics = this.goodsImgsSelect;	
+	let region=this.selfPostageData.map(item=> item.regionLabel).join(',');
+	this.formData.regionLabels=region
+      this.previewData = JSON.stringify(this.formData);
+
+      this.previewVisble = true;
     }
   },
   watch: {
@@ -873,6 +1038,7 @@ export default {
     imgProps(value) {
       this.goodsImgsSelect = this.goodsImgsSelect.concat(value);
     },
+    // 运送地
     regionValue(value) {
       if (value) {
         let arr = value.split(",");
@@ -976,7 +1142,6 @@ export default {
 
     // 市场成本价
     "formData.m_cost_price"(value) {
-      console.log(value);
       this.marketPostage.map(item => {
         item.m_cost_price = value;
       });

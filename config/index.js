@@ -12,7 +12,7 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: {
             '/proxy': {
-                target: 'http://xmw.natapp1.cc', // 你接口的域名http://192.168.50.61:8080
+                target: 'http://xmw.natapp1.cc', // 你接口的域名http://xmw.natapp1.cc
                 changeOrigin: true,
                 pathRewrite: {
                     '^/proxy': ''

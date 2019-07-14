@@ -48,6 +48,16 @@ const common = {
         s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
         var uuid = s.join("");
         return uuid;
+    },
+
+    getUrlKey(name) {
+        let href = location.href;
+        try {
+            href = decodeURIComponent(href);
+        } catch (err) {
+            href = location.href;
+        }
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(href) || [, ""])[1].replace(/\+/g, '%20')) || null
     }
 }
 export default common

@@ -18,6 +18,7 @@
           :show-file-list="false"
           :before-upload="beforeUpload"
           :on-success="uploadSuccess"
+          :on-error="uploadError"
         >
           <el-button size="small" type="primary">上传图片</el-button>
         </el-upload>
@@ -89,12 +90,44 @@ export default {
     this.getSourceData();
   },
   methods: {
-    beforeUpload() {
+    beforeUpload(file) {
       this.loading = true;
+      let _this = this;
+      if (file.type.indexOf("image") < 0) {
+	  _this.$message({ message: "图片格式不正确", type: "error" });
+	   this.loading = false;
+        return false;
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 751;
+        let height = 751;
+        let _URL = window.URL || window.webkitURL;
+        let img = new Image();
+        img.onload = function() {
+          let valid = img.width / img.height == 1 && img.width < height;
+          valid ? resolve() : reject();
+        };
+        img.src = _URL.createObjectURL(file);
+      }).then(
+        () => {
+          return file;
+        },
+        () => {
+          _this.$message({ message: "上传的图片尺寸错误!", type: "error" });
+          this.loading = false;
+          return Promise.reject();
+        }
+      );
+      return isSize;
     },
     uploadSuccess(response, file, fileList) {
       this.goodsImgs.data.push({ pic_path: response.data, select: false });
+      this.loading = false;
       // this.getSourceData();
+    },
+    uploadError() {
+      this.loading = false;
     },
     // 获取素材
     getSourceData() {
@@ -102,8 +135,8 @@ export default {
         .get("merchant/material_management", this.filter)
         .then(res => {
           if (res.data.code == 200) {
-            this.goodsImgs.data = res.data.data.item;
-            this.goodsImgs.total = res.data.data.total;
+            this.goodsImgs.data = res.data.data.item || [];
+            this.goodsImgs.total = res.data.data.total || "0";
             this.loading = false;
           } else {
             this.$message.error({ message: res.data.msg });
@@ -159,11 +192,12 @@ export default {
     visible(v) {
       if (v) {
         let imgs = JSON.parse(JSON.stringify(this.goodsImgs.data));
-
-        imgs.map((item, index) => {
-          item.select = false;
-        });
-        this.goodsImgs.data = imgs;
+        if (imgs.length) {
+          imgs.map((item, index) => {
+            item.select = false;
+          });
+          this.goodsImgs.data = imgs;
+        }
       }
       this.currentVisible = v;
       this.ifAdd = true;

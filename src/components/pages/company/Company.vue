@@ -1,9 +1,9 @@
 <template>
-  <div class="clearfix full-height">
+  <div class="clearfix">
     <app-sider></app-sider>
 
     <!-- <vue-scrollbar class="my-scrollbar full-height" ref="Scrollbar"> -->
-      <div class="wrap full-height">
+      <div class="wrap">
         <router-view></router-view>
       </div>
     <!-- </vue-scrollbar> -->
