@@ -871,45 +871,58 @@ export default {
             this.$message.error({ message: "请设置自营销售价格" });
             return false;
           }
-          if (
-            !this.marketPostage.length &&
-            this.is_supplier == "1" &&
-            this.formData.sales_mode == "2"
-          ) {
-            this.$message.error({ message: "请设置市场销售价格" });
-            return false;
+          if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
+            if (!this.marketPostage.length) {
+              this.$message.error({ message: "请设置市场销售价格" });
+              return false;
+		}
+		if(!this.formData.m_market_price){
+			this.$message.error({ message: "请设置市场市场价" });
+              return false;
+		}
+		if(!this.formData.m_cost_price){
+			this.$message.error({ message: "请设置市场成本价" });
+              return false;
+		}
+		if(!this.formData.m_wholesale_price){
+			this.$message.error({ message: "请设置市场批发价" });
+              return false;
+		}
           }
+
           this.formData.pic_paths = this.goodsImgsSelect.map(
             (item, index) => item.pic_path
           );
-          if (this.formData.pic_paths == "") {
+          if (!this.formData.pic_paths.length) {
             this.$message.error({ message: "请上传商品图片" });
             return false;
           }
           if (this.formData.goods_detail == "") {
-            this.$message.error({ message: "请上传商品图片" });
+            this.$message.error({ message: "请填写商品详情" });
             return false;
           }
-          this.loading = true;
-          this.$api
-            .post("merchant/upload_goods", this.formData)
-            .then(res => {
-              if (res.data.code == 200) {
-                this.$message({
-                  message: "上传商品成功",
-                  type: "success"
-                });
-                setTimeout(h => {
-                  this.loading = false;
-                  this.$router.replace("/company/warehouse/warehouse");
-                }, 1500);
-              } else {
-                this.$message.error({ message: res.data.msg });
-              }
-            })
-            .catch(err => {
-              this.$message.error({ message: err });
-            });
+          if (this.priceCheck()) {
+            this.loading = true;
+            this.$api
+              .post("merchant/upload_goods", this.formData)
+              .then(res => {
+                if (res.data.code == 200) {
+                  this.$message({
+                    message: "上传商品成功",
+                    type: "success"
+                  });
+                  setTimeout(h => {
+                    this.loading = false;
+                    this.$router.replace("/company/warehouse/warehouse");
+                  }, 1500);
+                } else {
+                  this.$message.error({ message: res.data.msg });
+                }
+              })
+              .catch(err => {
+                this.$message.error({ message: err });
+              });
+          }
         } else {
           this.$message.error("请将信息填写完整");
           this.loading = false;
@@ -1025,12 +1038,100 @@ export default {
     },
     // 预览
     previewHandle() {
-	this.formData.pics = this.goodsImgsSelect;	
-	let region=this.selfPostageData.map(item=> item.regionLabel).join(',');
-	this.formData.regionLabels=region
-      this.previewData = JSON.stringify(this.formData);
+      this.formData.pics = this.goodsImgsSelect;
+      let region = this.selfPostageData.map(item => item.regionLabel).join(",");
+      this.formData.regionLabels = region;
 
-      this.previewVisble = true;
+      if (!this.formData.pics.length) {
+        this.$message.error("请上传商品图片");
+        return false;
+      }
+      if (this.formData.goods_name == "") {
+        this.$message.error("请填写商品名称");
+        return false;
+      }
+      if (this.formData.s_market_price == "") {
+        this.$message.error("请填写市场价");
+        return false;
+      }
+      if (this.formData.s_sell_price == "") {
+        this.$message.error("请填写销售价");
+        return false;
+      }
+      if (this.formData.s_min_order == "") {
+        this.$message.error("请填写起订量");
+        return false;
+      }
+      if (this.formData.goods_detail == "") {
+        this.$message.error("请填写商品详情");
+        return false;
+      }
+      let data = {
+        api_token: this.$api.getToken(),
+        pic_paths: this.formData.pics.map(item => item.pic_path),
+        goods_name: this.formData.goods_name,
+        s_market_price: this.formData.s_market_price,
+        s_sell_price: this.formData.s_sell_price,
+        s_min_order: this.formData.s_min_order,
+        goods_detail: this.formData.goods_detail
+      };
+      if (this.priceCheck()) {
+        this.postPreview(data);
+      }
+    },
+    postPreview(data) {
+      this.loading = true;
+      this.$api
+        .post("merchant/create_qrcode", data)
+        .then(res => {
+          if (res.data.code == 200) {
+            this.previewData = JSON.stringify({
+              ...this.formData,
+              ewm: res.data.data
+            });
+            this.previewVisble = true;
+          } else {
+            this.$message.error({ message: res.data.msg });
+          }
+          this.loading = false;
+        })
+        .catch(err => {
+          this.$message.error({ message: err });
+          this.loading = false;
+        });
+    },
+    //     价格限制
+    priceCheck() {
+      if (this.formData.s_cost_price - 0 >= this.formData.s_sell_price - 0) {
+        this.$message.error("自营销售价不能小于自营成本价");
+        return false;
+      }
+      if (this.formData.s_sell_price - this.formData.s_mem_price > 0) {
+        this.$message.error("自营销售价不能大于自营会员价");
+        return false;
+      }
+      if (this.formData.s_mem_price - this.formData.s_market_price > 0) {
+        this.$message.error("自营会员价不能大于自营市场价");
+        return false;
+      }
+      if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
+        if (
+          this.formData.m_cost_price - 0 >=
+          this.formData.m_wholesale_price - 0
+        ) {
+          this.$message.error("市场批发价不能小于市场成本价");
+          return false;
+        }
+        if (
+          this.formData.m_market_price - 0 <
+          this.formData.m_wholesale_price - 0
+        ) {
+          this.$message.error("市场市场价不能大于市场批发价");
+          return false;
+        }
+      }
+
+      return true;
     }
   },
   watch: {

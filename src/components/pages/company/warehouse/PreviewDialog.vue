@@ -64,7 +64,7 @@
         <div class="rightmain">
           <div class="ewmtit">手机扫码预览</div>
           <div class="ewmbox">
-            <img src="../../../../assets/images/ewm.png" alt />
+            <img :src="currentPreviewData.ewm" alt />
             <p>使用微信扫一扫</p>
           </div>
           <div class="previewbtn" @click="pcPreview">网页预览</div>
