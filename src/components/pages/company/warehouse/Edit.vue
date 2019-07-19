@@ -9,9 +9,7 @@
     <div class="form-content" v-loading="loading">
       <el-form :model="formData" :rules="rules" ref="ruleForm">
         <div class="form-item">
-          <div class="item-name">
-            <span style="color: #ED5580; margin-right: 3px;">*</span>基本信息
-          </div>
+          <div class="item-name">基本信息</div>
           <!---->
           <div class="form-group">
             <div class="f-label">
@@ -60,6 +58,7 @@
                   :props="defaultProps"
                   v-model="goodsTypeSelect"
                   @change="handleGoodsTypeChange"
+                  ref="test"
                 ></el-cascader>
               </el-form-item>
             </div>
@@ -83,7 +82,7 @@
             </div>
             <div class="inp-box">
               <el-form-item prop="goods_name">
-                <el-input placeholder="请输入商品名称" v-model="formData.goods_name"></el-input>
+                <el-input placeholder="请输入商品名称" v-model="formData.goods_name" ref="ref1"></el-input>
               </el-form-item>
             </div>
           </div>
@@ -93,7 +92,7 @@
               分享描述
             </div>
             <div class="inp-box">
-              <el-form-item>
+              <el-form-item prop="share_describe">
                 <el-input placeholder="请输入分享商品的描述" v-model="formData.share_describe"></el-input>
               </el-form-item>
             </div>
@@ -102,9 +101,7 @@
         </div>
         <!---->
         <div class="form-item">
-          <div class="item-name">
-            <span style="color: #ED5580; margin-right: 3px;">*</span>自营销售政策设置
-          </div>
+          <div class="item-name">自营销售政策设置</div>
           <div class="form-group">
             <div class="f-label">
               <span>*</span>
@@ -117,6 +114,8 @@
                   placeholder="发货时间"
                   style="width:224px;margin-right:8px"
                   v-model="formData.s_deliver"
+                  type="number"
+                  :change="limit('formData.s_deliver',formData.s_deliver)"
                 ></el-input>个小时发货
               </el-form-item>
             </div>
@@ -130,7 +129,12 @@
             </div>
             <div class="inp-box">
               <el-form-item prop="s_stock">
-                <el-input placeholder="请输入库存数量" v-model="formData.s_stock"></el-input>
+                <el-input
+                  placeholder="请输入库存数量"
+                  v-model="formData.s_stock"
+                  type="number"
+                  :change="limit('formData.s_stock',formData.s_stock)"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="inp-tips">库存为0自动下架</div>
@@ -143,7 +147,13 @@
             </div>
             <div class="inp-box">
               <el-form-item prop="s_min_order">
-                <el-input placeholder="请输入起订量" v-model="formData.s_min_order"></el-input>
+                <el-input
+                  placeholder="请输入起订量"
+                  v-model="formData.s_min_order"
+                  type="number"
+                  ref="ref2"
+                  :change="limit('formData.s_min_order',formData.s_min_order)"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="inp-tips">不符合起订量要求不能提交订单</div>
@@ -152,27 +162,36 @@
           <!--1-->
           <div class>
             <div class="form-item-name">
-              <span style="color: #ED5580; margin-right: 3px;">*</span>自营销售价格设置
+              自营销售价格设置
               <i>(自营商品在此处可不设置运费，根据所创建的活动在活动商品管理中进行设置)</i>
             </div>
           </div>
-          <el-button
+          <!-- <el-button
             type="primary"
             size="mini"
             style="margin-bottom:15px;float:right"
             @click="addDeliver"
-          >添加</el-button>
-          <el-table :data="selfPostageData" style="width: 100%;margin-bottom:20px" border>
+          >添加</el-button>-->
+          <el-table
+            :data="selfPostageData.concat([{isAdd:true}])"
+            style="width: 100%;margin-bottom:20px"
+            border
+          >
             <el-table-column align="center">
               <template slot="header">
                 <span style="color: #ED5580; margin-right: 3px;">*</span>选择地区
               </template>
               <template slot-scope="scope">
-                {{scope.row.regionLabel}}
-                <a
-                  @click.prevent="editRegion(scope.row,'1')"
-                  style="color:#44B549"
-                >编辑</a>
+                <template v-if="scope.row.isAdd">
+                  <span @click="addDeliver" style="cursor:pointer">+添加地区</span>
+                </template>
+                <template v-else>
+                  {{scope.row.regionLabel}}
+                  <a
+                    @click.prevent="editRegion(scope.row,'1')"
+                    style="color:#44B549"
+                  >编辑</a>
+                </template>
               </template>
             </el-table-column>
 
@@ -199,23 +218,29 @@
                 <span style="color: #ED5580; margin-right: 3px;">*</span>运费设置
               </template>
               <template slot-scope="scope">
-                {{scope.row.postage=='0'
-                ?'包邮':scope.row.postage=='1'
-                ?'另计（批发模式默认）'
-                :'买家承担 首件：'+scope.row.first_piece+' 续件：'+scope.row.more_piece}}
-                <a
-                  @click.prevent="editDeliver(scope.row,'1')"
-                  style="color:#44B549;margin-left:15px"
-                >修改运费</a>
+                <template v-if="scope.row.isAdd"></template>
+                <template v-else>
+                  {{scope.row.postage=='0'
+                  ?'包邮':scope.row.postage=='1'
+                  ?'另计（批发模式默认）'
+                  :`买家承担 首件：￥${scope.row.first_piece||0} 续件：￥${scope.row.more_piece||0}`}}
+                  <a
+                    @click.prevent="editDeliver(scope.row,'1')"
+                    style="color:#44B549;margin-left:15px"
+                  >修改运费</a>
+                </template>
               </template>
             </el-table-column>
             <el-table-column align="center" width="100" label="操作">
               <template slot-scope="scope">
-                <a
-                  href="javascript:;"
-                  @click.prevent="delSeLfHandle(scope.row)"
-                  style="color:#999"
-                >删除</a>
+                <template v-if="scope.row.isAdd"></template>
+                <template v-else>
+                  <a
+                    href="javascript:;"
+                    @click.prevent="delSeLfHandle(scope.row)"
+                    style="color:#999"
+                  >删除</a>
+                </template>
               </template>
             </el-table-column>
           </el-table>
@@ -229,9 +254,14 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.s_cost_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="s_cost_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('s_cost_price',s_cost_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible1=false"
+                  @click.prevent="visible1=false;formData.s_cost_price=s_cost_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -250,9 +280,14 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.s_market_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="s_market_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('s_market_price',s_market_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible2=false"
+                  @click.prevent="visible2=false;formData.s_market_price=s_market_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -272,9 +307,15 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.s_sell_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="s_sell_price"
+                  style="width:100px"
+                  ref="sellPrice"
+                  type="number"
+                  :change="limit('s_sell_price',s_sell_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible3=false"
+                  @click.prevent="visible3=false;formData.s_sell_price=s_sell_price;"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -287,9 +328,14 @@
             </el-popover>
             <el-popover placement="bottom-start" width="200" trigger="click" v-model="visible4">
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.s_mem_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="s_mem_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('s_mem_price',s_mem_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible4=false"
+                  @click.prevent="visible4=false;formData.s_mem_price=s_mem_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -347,7 +393,10 @@
                 <el-input
                   placeholder="发货时间"
                   style="width:224px;margin-right:8px"
+                  type="number"
                   v-model="formData.m_deliver"
+                  ref="ref3"
+                  :change="limit('formData.m_deliver',formData.m_deliver)"
                 ></el-input>个小时发货
               </el-form-item>
             </div>
@@ -366,7 +415,12 @@
       { required: is_supplier=='1'&&formData.sales_mode=='2', message: '请输入库存数量', trigger: 'blur' }     
     ]"
               >
-                <el-input placeholder="请输入库存数量" v-model="formData.m_stock"></el-input>
+                <el-input
+                  placeholder="请输入库存数量"
+                  v-model="formData.m_stock"
+                  type="number"
+                  :change="limit('formData.m_stock',formData.m_stock)"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="inp-tips">库存为0自动下架</div>
@@ -384,7 +438,12 @@
       { required: is_supplier=='1'&&formData.sales_mode=='2', message: '请输入起订量', trigger: 'blur' }     
     ]"
               >
-                <el-input placeholder="请输入起订量" v-model="formData.m_min_order"></el-input>
+                <el-input
+                  placeholder="请输入起订量"
+                  v-model="formData.m_min_order"
+                  type="number"
+                  :change="limit('formData.m_min_order',formData.m_min_order)"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="inp-tips">不符合起订量要求不能提交订单</div>
@@ -397,23 +456,32 @@
               <i>(批发价默认运费为线下结算，无须设置运费；分销价等于批发价+运费，如运费设置为包邮，那么批发价和分销价相同)</i>
             </div>
           </div>
-          <el-button
+          <!-- <el-button
             type="primary"
             size="mini"
             style="margin-bottom:15px;float:right"
             @click="addDeliverMarket"
-          >添加</el-button>
-          <el-table :data="marketPostage" style="width: 100%;margin-bottom:20px" border>
+          >添加</el-button> -->
+          <el-table
+            :data="marketPostage.concat([{isAdd:true}])"
+            style="width: 100%;margin-bottom:20px"
+            border
+          >
             <el-table-column align="center">
               <template slot="header">
                 <span style="color: #ED5580; margin-right: 3px;">*</span>选择地区
               </template>
               <template slot-scope="scope">
-                {{scope.row.regionLabel}}
-                <a
-                  @click.prevent="editRegion(scope.row,'2')"
-                  style="color:#44B549"
-                >编辑</a>
+                <template v-if="scope.row.isAdd">
+                  <span @click="addDeliverMarket" style="cursor:pointer">+添加地区</span>
+                </template>
+                <template v-else>
+                  {{scope.row.regionLabel}}
+                  <a
+                    @click.prevent="editRegion(scope.row,'2')"
+                    style="color:#44B549"
+                  >编辑</a>
+                </template>
               </template>
             </el-table-column>
 
@@ -449,23 +517,29 @@
                 <span style="color: #ED5580; margin-right: 3px;">*</span>运费设置
               </template>
               <template slot-scope="scope">
-                {{scope.row.postage=='0'
-                ?'包邮':scope.row.postage=='1'
-                ?'另计（批发模式默认）'
-                :'买家承担 首件：'+scope.row.first_piece+' 续件：'+scope.row.more_piece}}
-                <a
-                  @click.prevent="editDeliver(scope.row,2)"
-                  style="color:#44B549;margin-left:15px"
-                >修改运费</a>
+                <template v-if="scope.row.isAdd"></template>
+                <template v-else>
+                  {{scope.row.postage=='0'
+                  ?'包邮':scope.row.postage=='1'
+                  ?'另计（批发模式默认）'
+                  :`买家承担 首件：￥${scope.row.first_piece||0} 续件：￥${scope.row.more_piece||0}`}}
+                  <a
+                    @click.prevent="editDeliver(scope.row,2)"
+                    style="color:#44B549;margin-left:15px"
+                  >修改运费</a>
+                </template>
               </template>
             </el-table-column>
             <el-table-column align="center" width="100" label="操作">
               <template slot-scope="scope">
-                <a
-                  href="javascript:;"
-                  @click.prevent="delMarketHandle(scope.row)"
-                  style="color:#999"
-                >删除</a>
+                <template v-if="scope.row.isAdd"></template>
+                <template v-else>
+                  <a
+                    href="javascript:;"
+                    @click.prevent="delMarketHandle(scope.row)"
+                    style="color:#999"
+                  >删除</a>
+                </template>
               </template>
             </el-table-column>
           </el-table>
@@ -479,9 +553,14 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.m_cost_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="m_cost_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('m_cost_price',m_cost_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible5=false"
+                  @click.prevent="visible5=false;formData.m_cost_price=m_cost_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -500,9 +579,14 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.m_market_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="m_market_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('m_market_price',m_market_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible6=false"
+                  @click.prevent="visible6=false;formData.m_market_price=m_market_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -522,9 +606,14 @@
               style="margin-right:10px"
             >
               <div style="display:flex;align-items:center">
-                <el-input v-model="formData.m_wholesale_price" style="width:100px"></el-input>
+                <el-input
+                  v-model="m_wholesale_price"
+                  style="width:100px"
+                  type="number"
+                  :change="limit('m_wholesale_price',m_wholesale_price)"
+                ></el-input>
                 <a
-                  @click.prevent="visible7=false"
+                  @click.prevent="visible7=false;formData.m_wholesale_price=m_wholesale_price"
                   style="color:#44B549;font-size:12px;margin-left:10px"
                 >确定</a>
                 <a
@@ -547,7 +636,7 @@
           <div class="upload-box">
             <ul class="clearfix">
               <li v-for="(item,index) in goodsImgsSelect" :key="index">
-                <img :src="item.pic_path" alt />
+                <img :src="item.pic_path" alt @click.stop="bigImgHandle(item.pic_path)" />
                 <span class="el-icon-error" @click="delImgSelect(index)"></span>
               </li>
               <li @click="imgsDialogHandle">
@@ -578,7 +667,7 @@
       </el-form>
     </div>
     <div class="bot-tools-t" style="position:static">
-      <el-button type="primary" @click="submitHandle('ruleForm')">确定</el-button>
+      <el-button type="primary" @click="submitHandle('ruleForm')">保存</el-button>
       <el-button>取消</el-button>
       <el-button type="primary" plain @click="previewHandle">预览</el-button>
     </div>
@@ -587,6 +676,7 @@
       :visible.sync="visible"
       :goodsImgsSelect.sync="goodsImgsSelect"
       :imgProps.sync="imgProps"
+      :size.sync="size"
     ></source-dialog>
     <!-- 地区选择 -->
     <region-dialog :regionVisible.sync="regionVisible" :regionValue.sync="regionValue"></region-dialog>
@@ -594,6 +684,10 @@
     <deliver-dialog :deliverVisible.sync="deliverVisible" :deliverForm.sync="deliverForm"></deliver-dialog>
     <!-- 预览 -->
     <preview-dialog :previewVisble.sync="previewVisble" :previewData="previewData"></preview-dialog>
+    <!-- 大图 -->
+    <el-dialog :visible.sync="bigImgVisible" width="50%" class="bigimg">
+      <img :src="currentImg" alt />
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -605,6 +699,7 @@ import { quillRedefine } from "vue-quill-editor-upload";
 import regionDialog from "./RegionDialog";
 import deliverDialog from "./DeliverDialog";
 import PreviewDialog from "./PreviewDialog";
+
 export default {
   components: {
     SourceDialog,
@@ -631,9 +726,12 @@ export default {
           { required: true, message: "请选择分类", trigger: "change" }
         ],
         goods_name: [
-          { required: true, message: "请输入商品名称", trigger: "blur" }
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+          { max: 20, message: "长度不能超过20个字符", trigger: "blur" }
         ],
-
+        share_describe: [
+          { max: 120, message: "长度不能超过120个字符", trigger: "blur" }
+        ],
         s_stock: [
           { required: true, message: "请输入商品库存", trigger: "blur" }
         ],
@@ -644,6 +742,14 @@ export default {
           { required: true, message: "请输入发货时间", trigger: "blur" }
         ]
       },
+      s_sell_price: "", // 销售价
+      s_market_price: "", //市场价
+      s_mem_price: "", // 会员价
+      s_cost_price: "", //成本价
+
+      m_cost_price: "",
+      m_market_price: "",
+      m_wholesale_price: "",
       formData: {
         api_token: this.$api.getToken(),
         sales_mode: "1",
@@ -719,7 +825,10 @@ export default {
       loading: false,
       priceType: "", //1 自营 2 分销,
       previewVisble: false,
-      previewData: ""
+      previewData: "",
+      bigImgVisible: false,
+      currentImg: "",
+      size: 1
     };
   },
   computed: {
@@ -840,7 +949,8 @@ export default {
     // 修改自营地区
     editRegion(row, priceType) {
       this.priceType = priceType;
-      this.selfAddId = row.unique_id ? row.unique_id : row.addId;
+      // this.selfAddId = row.postage_id ? row.postage_id : row.addId;
+      this.selfAddId = row.addId;
       this.regionValue = row.region;
       this.regionVisible = true;
     },
@@ -848,7 +958,8 @@ export default {
     // 修改自营运费
     editDeliver(row, priceType) {
       this.priceType = priceType;
-      this.selfAddId = row.unique_id ? row.unique_id : row.addId;
+      // this.selfAddId = row.postage_id ? row.postage_id : row.addId;
+      this.selfAddId = row.addId;
       this.deliverForm = {
         postage: row.postage + "",
         first_piece: row.first_piece,
@@ -867,27 +978,37 @@ export default {
           //     this.formData.s_cost_price = (this.formData.s_cost_price - 0).toFixed(2);
           //     this.formData.s_sell_price = (this.formData.s_sell_price - 0).toFixed(2);
           //     this.formData.s_market_price = (this.formData.s_market_price - 0).toFixed(2);
-          if (!this.selfPostageData.length) {
+          //     if (!this.selfPostageData.length) {
+          // 	this.$message.error({ message: "请设置自营销售价格" });
+          // 	this.$refs.ref3.focus()
+          //       return false;
+          //     }
+          if (!this.formData.s_sell_price) {
             this.$message.error({ message: "请设置自营销售价格" });
+            this.$refs.ref3.focus();
             return false;
           }
           if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
             if (!this.marketPostage.length) {
               this.$message.error({ message: "请设置市场销售价格" });
+              this.$refs.ref3.focus();
               return false;
-		}
-		if(!this.formData.m_market_price){
-			this.$message.error({ message: "请设置市场市场价" });
+            }
+            if (!this.formData.m_market_price) {
+              this.$message.error({ message: "请设置市场市场价" });
+              this.$refs.ref3.focus();
               return false;
-		}
-		if(!this.formData.m_cost_price){
-			this.$message.error({ message: "请设置市场成本价" });
+            }
+            if (!this.formData.m_cost_price) {
+              this.$message.error({ message: "请设置市场成本价" });
+              this.$refs.ref3.focus();
               return false;
-		}
-		if(!this.formData.m_wholesale_price){
-			this.$message.error({ message: "请设置市场批发价" });
+            }
+            if (!this.formData.m_wholesale_price) {
+              this.$message.error({ message: "请设置市场批发价" });
+              this.$refs.ref3.focus();
               return false;
-		}
+            }
           }
 
           this.formData.pic_paths = this.goodsImgsSelect.map(
@@ -895,35 +1016,91 @@ export default {
           );
           if (!this.formData.pic_paths.length) {
             this.$message.error({ message: "请上传商品图片" });
+            this.$refs.myQuillEditor.quill.focus();
             return false;
           }
           if (this.formData.goods_detail == "") {
             this.$message.error({ message: "请填写商品详情" });
+            this.$refs.myQuillEditor.quill.focus();
             return false;
           }
-          if (this.priceCheck()) {
+          if (this.priceCheck() && this.addressCheck()) {
             this.loading = true;
-            this.$api
-              .post("merchant/upload_goods", this.formData)
-              .then(res => {
-                if (res.data.code == 200) {
-                  this.$message({
-                    message: "上传商品成功",
-                    type: "success"
-                  });
-                  setTimeout(h => {
+            if (this.$route.query.goodsId) {
+              this.$api
+                .post("merchant/update_goods", {
+                  ...this.formData,
+                  goods_id: this.$route.query.goodsId
+                })
+                .then(res => {
+                  if (res.data.code == 200) {
+                    this.$message({
+                      message: res.data.msg,
+                      type: "success"
+                    });
+                    setTimeout(h => {
+                      this.loading = false;
+                      this.$router.replace("/company/warehouse/warehouse");
+                    }, 1500);
+                  } else {
+                    this.$message.error({ message: res.data.msg });
                     this.loading = false;
-                    this.$router.replace("/company/warehouse/warehouse");
-                  }, 1500);
-                } else {
-                  this.$message.error({ message: res.data.msg });
-                }
-              })
-              .catch(err => {
-                this.$message.error({ message: err });
-              });
+                  }
+                })
+                .catch(err => {
+                  this.$message.error({ message: err });
+                  this.loading = false;
+                });
+            } else {
+              this.$api
+                .post("merchant/upload_goods", this.formData)
+                .then(res => {
+                  if (res.data.code == 200) {
+                    this.$message({
+                      message: res.data.msg,
+                      type: "success"
+                    });
+                    setTimeout(h => {
+                      this.loading = false;
+                      this.$router.replace("/company/warehouse/warehouse");
+                    }, 1500);
+                  } else {
+                    this.$message.error({ message: res.data.msg });
+                    this.loading = false;
+                  }
+                })
+                .catch(err => {
+                  this.$message.error({ message: err });
+                  this.loading = false;
+                });
+            }
           }
         } else {
+          if (
+            !this.formData.first_sort ||
+            !this.formData.second_sort ||
+            !this.formData.goods_brand ||
+            !this.formData.goodsName
+          ) {
+            this.$refs.ref1.focus();
+          }
+          if (
+            !this.formData.s_deliver ||
+            !this.formData.s_stock ||
+            !this.formData.s_min_order
+          ) {
+            this.$refs.ref2.focus();
+          }
+          if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
+            if (
+              !this.formData.m_deliver ||
+              !this.formData.m_stock ||
+              !this.formData.m_min_order
+            ) {
+              this.$refs.ref3.focus();
+            }
+          }
+
           this.$message.error("请将信息填写完整");
           this.loading = false;
           return false;
@@ -973,26 +1150,33 @@ export default {
               ];
               let selfPostageData = res.data.data.self_postage;
               let marketPostage = res.data.data.market_postage;
+              let all = this.regionData.map(item => item.value); //全国
               //   自营销售价格
               selfPostageData.map(self => {
                 self.s_cost_price = this.formData.s_cost_price;
                 self.s_sell_price = this.formData.s_sell_price;
                 self.s_market_price = this.formData.s_market_price;
                 self.s_mem_price = this.formData.s_mem_price;
+                self.addId = this.$common.getuuid();
                 let arr = self.region.split(",");
                 let result = [];
-                arr.map((bj, bjindex) => {
-                  this.regionData.find(item => {
-                    item.value == bj ? result.push(item.label) : "";
+                if (this.$common.ArrayIsEqual(all, arr)) {
+                  //all包含在arr中，因为arr中可能会多选子区域
+                  result = ["全国"];
+                } else {
+                  arr.map((bj, bjindex) => {
+                    this.regionData.find(item => {
+                      item.value == bj ? result.push(item.label) : "";
+                    });
+                    this.regionData.map((region, reginindex) => {
+                      if (region.children) {
+                        region.children.find(item => {
+                          item.value == bj ? result.push(item.label) : "";
+                        });
+                      }
+                    });
                   });
-                  this.regionData.map((region, reginindex) => {
-                    if (region.children) {
-                      region.children.find(item => {
-                        item.value == bj ? result.push(item.label) : "";
-                      });
-                    }
-                  });
-                });
+                }
                 self.regionLabel = result.join(",");
               });
               //   市场销售价格
@@ -1001,20 +1185,27 @@ export default {
                 self.m_market_price = this.formData.m_market_price;
                 self.m_wholesale_price = this.formData.m_wholesale_price;
                 self.dist_price = this.formData.m_wholesale_price;
+                self.addId = this.$common.getuuid();
                 let arr = self.region.split(",");
                 let result = [];
-                arr.map((bj, bjindex) => {
-                  this.regionData.find(item => {
-                    item.value == bj ? result.push(item.label) : "";
+
+                if (this.$common.ArrayIsEqual(all, arr)) {
+                  //all包含在arr中，因为arr中可能会多选子区域
+                  result = ["全国"];
+                } else {
+                  arr.map((bj, bjindex) => {
+                    this.regionData.find(item => {
+                      item.value == bj ? result.push(item.label) : "";
+                    });
+                    this.regionData.map((region, reginindex) => {
+                      if (region.children) {
+                        region.children.find(item => {
+                          item.value == bj ? result.push(item.label) : "";
+                        });
+                      }
+                    });
                   });
-                  this.regionData.map((region, reginindex) => {
-                    if (region.children) {
-                      region.children.find(item => {
-                        item.value == bj ? result.push(item.label) : "";
-                      });
-                    }
-                  });
-                });
+                }
                 self.regionLabel = result.join(",");
               });
               this.selfPostageData = selfPostageData;
@@ -1042,28 +1233,34 @@ export default {
       let region = this.selfPostageData.map(item => item.regionLabel).join(",");
       this.formData.regionLabels = region;
 
-      if (!this.formData.pics.length) {
-        this.$message.error("请上传商品图片");
-        return false;
-      }
       if (this.formData.goods_name == "") {
         this.$message.error("请填写商品名称");
+        this.$refs.ref1.focus();
         return false;
       }
       if (this.formData.s_market_price == "") {
         this.$message.error("请填写市场价");
+        this.$refs.ref2.focus();
         return false;
       }
       if (this.formData.s_sell_price == "") {
         this.$message.error("请填写销售价");
+        this.$refs.ref2.focus();
         return false;
       }
       if (this.formData.s_min_order == "") {
         this.$message.error("请填写起订量");
+        this.$refs.ref2.focus();
+        return false;
+      }
+      if (!this.formData.pics.length) {
+        this.$message.error("请上传商品图片");
+        this.$refs.ref3.focus();
         return false;
       }
       if (this.formData.goods_detail == "") {
         this.$message.error("请填写商品详情");
+        this.$refs.myQuillEditor.quill.focus();
         return false;
       }
       let data = {
@@ -1102,18 +1299,29 @@ export default {
     },
     //     价格限制
     priceCheck() {
-      if (this.formData.s_cost_price - 0 >= this.formData.s_sell_price - 0) {
-        this.$message.error("自营销售价不能小于自营成本价");
-        return false;
+      if (
+        this.formData.s_cost_price &&
+        this.formData.s_sell_price &&
+        this.formData.s_mem_price &&
+        this.formData.s_market_price
+      ) {
+        if (this.formData.s_cost_price - 0 >= this.formData.s_sell_price - 0) {
+          this.$message.error("自营销售价不能小于自营成本价");
+          this.$refs.ref3.focus();
+          return false;
+        }
+        if (this.formData.s_sell_price - this.formData.s_mem_price < 0) {
+          this.$message.error("自营销售价不能小于自营会员价");
+          this.$refs.ref3.focus();
+          return false;
+        }
+        if (this.formData.s_mem_price - this.formData.s_market_price > 0) {
+          this.$message.error("自营会员价不能大于自营市场价");
+          this.$refs.ref3.focus();
+          return false;
+        }
       }
-      if (this.formData.s_sell_price - this.formData.s_mem_price > 0) {
-        this.$message.error("自营销售价不能大于自营会员价");
-        return false;
-      }
-      if (this.formData.s_mem_price - this.formData.s_market_price > 0) {
-        this.$message.error("自营会员价不能大于自营市场价");
-        return false;
-      }
+
       if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
         if (
           this.formData.m_cost_price - 0 >=
@@ -1132,6 +1340,59 @@ export default {
       }
 
       return true;
+    },
+    // 运送地判断
+    addressCheck() {
+      if (this.selfPostageData.length) {
+        if (this.selfPostageData.some(item => item.region == "")) {
+          this.$message.error("自营销售价格地区未设置");
+          return false;
+        }
+      } else {
+        this.$message.error("自营销售价格未设置");
+      }
+      if (this.is_supplier == "1" && this.formData.sales_mode == "2") {
+        if (this.marketPostage.length) {
+          if (this.marketPostage.some(item => item.region == "")) {
+            this.$message.error("市场销售价格地区未设置");
+            return false;
+          }
+        } else {
+          this.$message.error("自营销售价格未设置");
+        }
+      }
+      return true;
+    },
+    // 点击变大图
+    bigImgHandle(img) {
+      this.currentImg = img;
+      this.bigImgVisible = true;
+    },
+    limit(obj, value) {
+      // 通过正则过滤小数点后两位
+      //     this.s_sell_price= this.s_sell_price.replace(/[^\a-\z\A-\Z0-9]/g, '');
+      var price = "" + value;
+      price = price
+        .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
+        .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+        .replace(".", "$#$")
+        .replace(/\./g, "")
+        .replace("$#$", ".")
+        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
+      if (price.indexOf(".") < 0 && price != "") {
+        // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        price = parseFloat(price);
+      }
+      price = price + "";
+      if (price.split(".")[0].length > 7) {
+        price = `
+          ${price.split(".")[0].slice(0, 7)}`;
+      }
+      if (obj.split(".")[1]) {
+        this[`${obj.split(".")[0]}`][`${obj.split(".")[1]}`] = price;
+      } else {
+        this[obj] = price;
+      }
     }
   },
   watch: {
@@ -1141,26 +1402,34 @@ export default {
     },
     // 运送地
     regionValue(value) {
+      let all = this.regionData.map(item => item.value);
+      let arr = value.split(",");
+
       if (value) {
-        let arr = value.split(",");
         let result = [];
-        arr.map((bj, bjindex) => {
-          this.regionData.find(item => {
-            item.value == bj ? result.push(item.label) : "";
+        if (this.$common.ArrayIsEqual(all, arr)) {
+          //all包含在arr中，因为arr中可能会多选子区域
+          result = ["全国"];
+        } else {
+          arr.map((bj, bjindex) => {
+            this.regionData.find(item => {
+              item.value == bj ? result.push(item.label) : "";
+            });
+            this.regionData.map((region, reginindex) => {
+              if (region.children) {
+                region.children.find(item => {
+                  item.value == bj ? result.push(item.label) : "";
+                });
+              }
+            });
           });
-          this.regionData.map((region, reginindex) => {
-            if (region.children) {
-              region.children.find(item => {
-                item.value == bj ? result.push(item.label) : "";
-              });
-            }
-          });
-        });
+        }
+
         this.regionLabel = result.join(",");
         if (this.priceType == 1) {
           this.selfPostageData.find(item => {
             if (
-              item.unique_id == this.selfAddId ||
+              //   item.postage_id == this.selfAddId ||
               item.addId == this.selfAddId
             ) {
               this.$set(item, "regionLabel", this.regionLabel);
@@ -1170,7 +1439,7 @@ export default {
         } else {
           this.marketPostage.find(item => {
             if (
-              item.unique_id == this.selfAddId ||
+              //   item.postage_id == this.selfAddId ||
               item.addId == this.selfAddId
             ) {
               this.$set(item, "regionLabel", this.regionLabel);
@@ -1185,7 +1454,7 @@ export default {
         if (this.priceType == 1) {
           this.selfPostageData.find(item => {
             if (
-              item.unique_id == this.selfAddId ||
+              //   item.postage_id == this.selfAddId ||
               item.addId == this.selfAddId
             ) {
               this.$set(item, "postage", value.postage);
@@ -1196,7 +1465,7 @@ export default {
         } else {
           this.marketPostage.find(item => {
             if (
-              item.unique_id == this.selfAddId ||
+              //   item.postage_id == this.selfAddId ||
               item.addId == this.selfAddId
             ) {
               this.$set(item, "postage", value.postage);
@@ -1228,6 +1497,7 @@ export default {
         item.s_sell_price = value;
       });
     },
+    s_sell_price(old, now) {},
     //     市场价
     "formData.s_market_price"(value) {
       this.selfPostageData.map(item => {
@@ -1293,9 +1563,9 @@ export default {
   border: 1px solid #e7e7eb;
   border-radius: 3px;
   text-align: center;
-  width: 150px;
-  height: 150px;
-  line-height: 150px;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
   float: left;
 }
 .upload-box li img {
@@ -1303,8 +1573,9 @@ export default {
   height: 100%;
 }
 .upload-box li i {
-  font-size: 60px;
+  font-size: 40px;
 }
+
 .upload-box li span {
   position: absolute;
   right: -5px;
@@ -1312,6 +1583,10 @@ export default {
   font-size: 20px;
   cursor: pointer;
   color: #999;
+  opacity: 0;
+}
+.upload-box li:hover span {
+  opacity: 1;
 }
 .form-item-name {
   color: #262826;

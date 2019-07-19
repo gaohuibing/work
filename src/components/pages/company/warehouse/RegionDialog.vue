@@ -34,6 +34,7 @@
                         v-model="value.checked"
                         :key="key"
                         style="margin:4px 0"
+				
                       >
                         <svg slot="extra" class="svg svg-icon" viewBox="0 0 20 20">
                           <path
@@ -534,6 +535,25 @@ export default {
     };
   },
   methods: {
+	  test(){
+		  console.log('aaa')
+		  let data = this.region.db;
+		  this.region.db.map(item=>{
+			  if(item.children){
+				  console.log(this.region)
+				  item.children.map(child1=>{
+					  child1.checked=item.checked
+				  })
+				  item.checked=item.children.every(child1=>{
+					  return child1.checked==true
+				  })
+				  console.log(item.checked)
+			  }
+		  })
+	  },
+	  child(){
+
+	  },
     // 提交
     submitRegion() {
       let keys = Object.keys(this.region);

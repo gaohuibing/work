@@ -75,10 +75,10 @@ export default {
               path: "/company/warehouse/edit",
               query: {
                 description: data.description,
-                goodsImgs: JSON.stringify(data.goods_images.slice(0,5)),
-		    goodsDetail: data.goods_detail,
-		    goodsName:data.goods_name,
-		    isExport:true
+                goodsImgs: JSON.stringify(data.goods_images.slice(0, 5)),
+                goodsDetail: data.goods_detail,
+                goodsName: data.goods_name,
+                isExport: true
               }
             });
           } else {
@@ -86,7 +86,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message.error({ message: err });
+              this.$message.error({ message: err });         
         });
     }
   }

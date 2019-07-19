@@ -58,6 +58,35 @@ const common = {
             href = location.href;
         }
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(href) || [, ""])[1].replace(/\+/g, '%20')) || null
-    }
+    },
+
+    ArrayIsEqual(arr1, arr2) { //判断2个数组是否相等
+        //   if (arr1 === arr2) { //如果2个数组对应的指针相同，那么肯定相等，同时也对比一下类型
+        //       return true;
+        //   } else {
+        //       if (arr1.length != arr2.length) {
+        //           return false;
+        //       } else { //长度相同
+        //           for (let i in arr1) { //循环遍历对比每个位置的元素
+        //               if (!arr2.includes(arr1[i])) { //arr1 中有一个不在arr2中
+        //                   return false;
+        //               }
+        //           } //for循环完成，没有出现不相等的情况，那么2个数组相等
+        //           return true;
+        //       }
+        //   }
+
+        // 此处应为包含关系  所选的地区包括全国所有地区
+        for (let i in arr1) { //循环遍历对比每个位置的元素
+            if (!arr2.includes(arr1[i])) { //arr1 中有一个不在arr2中
+                return false;
+            }
+        }
+        return true
+    },
+
+
+
+
 }
 export default common

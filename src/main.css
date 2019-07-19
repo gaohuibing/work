@@ -406,11 +406,16 @@ a {
     border-left: 1px solid #E7E7EB;
     padding: 0 16px;
     position: relative;
+    margin-left: 200px
 }
 
 .sider {
     width: 200px;
     float: left;
+    position: fixed;
+    background: #fff;
+    top: 91px;
+    bottom: 30px
 }
 
 .sider li {
@@ -513,11 +518,12 @@ a {
     display: flex;
     justify-content: center;
     padding: 24px 16px;
-    position: absolute;
-    bottom: 0;
-    left: 16px;
-    right: 16px;
-    border-top: 1px solid #E7E7EB
+    border-top: 1px solid #E7E7EB;
+    position: fixed!important;
+    z-index: 999;
+    bottom: 30px;
+    width: 966px;
+    background: #fff
 }
 
 
@@ -572,11 +578,11 @@ a {
 }
 
 .avatar-uploader-icon {
-    font-size: 48px;
+    font-size: 30px;
     color: #8c939d;
-    width: 150px;
-    height: 150px;
-    line-height: 150px;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
     text-align: center;
 }
 
@@ -782,4 +788,23 @@ a {
 
 .vue-scrollbar__scrollbar-vertical {
     z-index: 2;
+}
+
+.bigimg .el-dialog__body {
+    padding: 0;
+    text-align: center
+}
+
+.bigimg .el-dialog {
+    background: none;
+    box-shadow: none
+}
+
+.bigimg .el-dialog__close {
+    color: #fff;
+    font-size: 40px;
+}
+
+.good-edit {
+    padding-bottom: 90px
 }

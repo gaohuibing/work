@@ -59,7 +59,7 @@ export default {
           url: "/shop"
         },
         {
-          name: "供应商",
+          name: "供应链",
           url: "/supplier"
         },
         {
@@ -75,6 +75,11 @@ export default {
         },
         {
           name: "帮助",
+          icon: "",
+          url: "/support"
+	  },
+	  {
+          name: "管理员",
           icon: "",
           url: "/support"
         }

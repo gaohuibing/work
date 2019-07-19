@@ -14,12 +14,16 @@
             v-model="formData.first_piece"
             :disabled="formData.postage!='2'"
             placeholder="首件：0:00"
-		style="margin-right:10px"
+            style="margin-right:10px"
+            type="number"
+            :change="limit('formData.first_piece',formData.first_piece)"
           ></el-input>
           <el-input
             v-model="formData.more_piece"
             :disabled="formData.postage!='2'"
             placeholder="续件：0:00"
+            type="number"
+            :change="limit('formData.more_piece',formData.more_piece)"
           ></el-input>
         </div>
       </div>
@@ -56,6 +60,32 @@ export default {
         }
       }
       this.dialogVisible = false;
+    },
+    limit(obj, value) {
+      // 通过正则过滤小数点后两位
+      //     this.s_sell_price= this.s_sell_price.replace(/[^\a-\z\A-\Z0-9]/g, '');
+      var price = "" + value;
+      price = price
+        .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
+        .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+        .replace(".", "$#$")
+        .replace(/\./g, "")
+        .replace("$#$", ".")
+        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
+      if (price.indexOf(".") < 0 && price != "") {
+        // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        price = parseFloat(price);
+      }
+      price = price + "";
+      if (price.split(".")[0].length > 7) {
+        price = `
+          ${price.split(".")[0].slice(0, 7)}`;
+      }
+      if (obj.split(".")[1]) {
+        this[`${obj.split(".")[0]}`][`${obj.split(".")[1]}`] = price;
+      } else {
+        this[obj] = price;
+	}
     }
   },
   watch: {
@@ -77,7 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.radiobox>div{
-	margin-bottom: 30px
+.radiobox > div {
+  margin-bottom: 30px;
 }
 </style>

@@ -46,8 +46,8 @@
         <div class="source-main" v-loading="loading">
           <ul class="s-main clearfix">
             <template v-for="(item,index) in goodsImgs.data">
-              <li @click="itemHandle(index)" :key="index">
-                <img :src="item.pic_path" />
+              <li @click="itemHandle(index)" :key="index" >
+                <img :src="item.pic_path" :ref="`img_${index}`"/>
                 <div class="bg" v-if="item.select">
                   <i class="el-icon-check"></i>
                 </div>
@@ -66,7 +66,7 @@
 
 <script>
 export default {
-  props: ["visible", "imgProps", "goodsImgsSelect"],
+  props: ["visible", "imgProps", "goodsImgsSelect",'size'],
   data() {
     return {
       apiUrl: this.$api.apiUrl + "merchant/upload_material",
@@ -83,10 +83,10 @@ export default {
       },
       currentGoodsImgsSelect: [],
       value: "",
-      loading: true
+	loading: true,	
     };
   },
-  mounted() {
+  mounted() {	  
     this.getSourceData();
   },
   methods: {
@@ -98,28 +98,29 @@ export default {
 	   this.loading = false;
         return false;
       }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      const isSize = new Promise(function(resolve, reject) {
-        let width = 751;
-        let height = 751;
-        let _URL = window.URL || window.webkitURL;
-        let img = new Image();
-        img.onload = function() {
-          let valid = img.width / img.height == 1 && img.width < height;
-          valid ? resolve() : reject();
-        };
-        img.src = _URL.createObjectURL(file);
-      }).then(
-        () => {
-          return file;
-        },
-        () => {
-          _this.$message({ message: "上传的图片尺寸错误!", type: "error" });
-          this.loading = false;
-          return Promise.reject();
-        }
-      );
-      return isSize;
+      // const isLt2M = file.size / 1024 / 1024 < 2;
+      // const isSize = new Promise(function(resolve, reject) {
+      //   let width = 751;
+      //   let height = 751;
+      //   let _URL = window.URL || window.webkitURL;
+      //   let img = new Image();
+      //   img.onload = function() {
+      //     let valid = img.width / img.height == 1 && img.width < height;
+      //     valid ? resolve() : reject();
+      //   };
+      //   img.src = _URL.createObjectURL(file);
+      // }).then(
+      //   () => {
+      //     return file;
+      //   },
+      //   () => {
+      //     _this.$message({ message: "上传的图片尺寸错误!", type: "error" });
+      //     this.loading = false;
+      //     return Promise.reject();
+      //   }
+      // );
+	// return isSize;
+	return true
     },
     uploadSuccess(response, file, fileList) {
       this.goodsImgs.data.push({ pic_path: response.data, select: false });
@@ -148,6 +149,15 @@ export default {
     },
     // 选择图片
     itemHandle(index) {
+	let imgRef=this.$refs[`img_${index}`][0];	
+	if(imgRef.naturalWidth/imgRef.naturalHeight!=this.size){
+		this.$message.error('图片长宽比必须为1:1');
+		return false
+	}
+	if(imgRef.naturalWidth>750||imgRef.naturalHeight>750){
+		this.$message.error('图片尺寸不能大于750');
+		return false
+	}	
       if (!this.goodsImgs.data[index].select) {
         if (this.ifAdd) {
           let data = JSON.parse(JSON.stringify(this.goodsImgs.data));

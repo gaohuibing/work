@@ -30,7 +30,7 @@
                       <span class="gray">{{currentPreviewData.s_min_order}}个</span>
                     </div>
                   </div>
-                  <div
+                  <!-- <div
                     class="pre-item"
                     style="display:flex; justify-content: space-between;align-items:center"
                   >
@@ -39,7 +39,7 @@
                       <span class="gray">{{userInfo.enterprise}}</span>
                     </div>
                     <i class="el-icon-phone" style="color:#44b549;font-size:20px"></i>
-                  </div>
+                  </div> -->
                   <div class="goods-details">
                     <div class="detail-tit">商品详情</div>
                     <div class="detail-content">
@@ -236,7 +236,14 @@ export default {
 .detail-content {
   padding: 0 12px 12px;
 }
+
+</style>
+<style>
+.detail-content * {
+	max-width: 100%;
+}
 .detail-content img {
   width: 100%;
 }
 </style>
+

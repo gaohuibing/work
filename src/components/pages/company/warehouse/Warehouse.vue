@@ -16,7 +16,7 @@
         </div>
         <div>
           <el-button class="filter-btn" type="primary" size="small" @click="getWarehouse">筛选</el-button>
-          <el-button size="small">导出</el-button>
+          <!-- <el-button size="small">导出</el-button> -->
         </div>
       </div>
       <div class="lab clearfix" style="display:block">
@@ -40,11 +40,11 @@
             </el-select>
           </div>
           <div class="inp-box" style="width:100px;margin-left:5px">
-            <el-input v-model="filter.min_price" placeholder="¥ 最低"></el-input>
+            <el-input v-model="filter.min_price" placeholder="¥ 最低" type="number"></el-input>
           </div>
           <em style="color:#999;margin:0 5px">-</em>
           <div class="inp-box" style="width:100px">
-            <el-input v-model="filter.max_price" placeholder="¥ 最高"></el-input>
+            <el-input v-model="filter.max_price" placeholder="¥ 最高" type="number"></el-input>
           </div>
         </div>
         <div class="reset">
@@ -87,7 +87,9 @@
         <el-table-column label="分类" align="center">
           <template slot-scope="scope">{{scope.row.first_sort}} / {{scope.row.second_sort}}</template>
         </el-table-column>
-        <el-table-column prop="s_sell_price" label="销售价" align="center"></el-table-column>
+        <el-table-column label="销售价" align="center">
+          <template slot-scope="scope">￥{{scope.row.s_sell_price}}</template>
+        </el-table-column>
         <el-table-column prop="s_stock" label="库存" align="center"></el-table-column>
         <el-table-column label="浏览/销量" align="center">
           <template slot-scope="scope">
@@ -200,7 +202,7 @@ export default {
         3: "成本价"
       },
       // 商品分类
-      selectGoodsType: [],
+      selectGoodsType: [0],
       // 一级分类
       firstSort: [],
       // 二级分类
@@ -378,13 +380,17 @@ export default {
         .get("sort/get_sort")
         .then(res => {
           if (res.data.code == 200) {
-            this.goodsType = res.data.data;
+            let goodsType = res.data.data;
             // 避免父级id与子级id一样 无法渲染
-            this.goodsType.map((item, index) => {
+            goodsType.map((item, index) => {
               item.second_sort.map((value, key) => {
                 value.id = value.id + value.father_id;
               });
             });
+            this.goodsType = [
+              { id: 0, is_enable: 1,second_sort:'', sort_name: "全部" },
+              ...goodsType
+            ];
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -394,9 +400,14 @@ export default {
         });
     },
     //  商品分类选择
-    handleGoodsTypeChange(data) {
-      this.filter.first_sort = data[0];
-      this.filter.second_sort = data[1] - data[0];
+    handleGoodsTypeChange(data) {	  
+      if (data[0]) {
+        this.filter.first_sort = data[0];
+        this.filter.second_sort = data[1] - data[0];
+      } else {
+        this.filter.first_sort = '';
+        this.filter.second_sort = "";
+      }
     },
     // 获取商品仓库列表
     getWarehouse() {
@@ -428,7 +439,8 @@ export default {
         max_price: "",
         page: "1",
         limits: "10"
-      };
+	};
+	this.selectGoodsType=[0];
       this.getWarehouse();
     },
     // 前往第几页
@@ -516,10 +528,12 @@ export default {
   width: 80px;
   height: 80px;
   float: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .goodinfo .pic img {
   width: 100%;
-  height: 100%;
 }
 .goodinfo .info {
   width: 140px;
@@ -527,10 +541,18 @@ export default {
   margin-left: 10px;
 }
 .goodinfo .info h5 {
-  height: 40px;
   font-size: 14px;
   font-weight: normal;
-  line-height: 20px;
+  line-height: 18px;
+  height: 36px;
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 3px;
 }
 .goodinfo .info .market-price {
   color: #999999;
