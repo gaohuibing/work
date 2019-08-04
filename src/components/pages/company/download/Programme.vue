@@ -3,8 +3,10 @@
     <div>
       <div class="tools">
         <el-button type="primary" size="small" style="margin-right:10px" @click="addHandle">新建方案</el-button>
-	  <span>说明：最多新建10条方案，单个方案最多可加入50个商品，方案保存7天（商品下载可以通过自有商品仓库、活动-展
-		  业活动、商城-展业活动的商品列表加入下载）</span>
+        <span>
+          说明：最多新建10条方案，单个方案最多可加入50个商品，方案保存7天（商品下载可以通过自有商品仓库、活动-展
+          业活动、商城-展业活动的商品列表加入下载）
+        </span>
       </div>
       <div class="table-content">
         <el-table
@@ -16,8 +18,8 @@
           style="width: 100%"
           v-loading="loading"
         >
-          <el-table-column type="index" width="50">
-            <template slot="header">序号</template>
+          <el-table-column type="index" width="50" label="序号" >
+            
           </el-table-column>
           <el-table-column label="报表名称" align="center">
             <template slot-scope="scope">
@@ -30,7 +32,11 @@
           </el-table-column>
           <el-table-column prop="goods_num" label="商品数量" align="center"></el-table-column>
           <el-table-column prop="created_at" label="创建日期" align="center"></el-table-column>
-          <el-table-column prop="expire_day" label="有效期" align="center"></el-table-column>
+          <el-table-column label="有效期" align="center">
+		    <template slot-scope="scope">
+			    {{scope.row.expire_day}}天
+		    </template>
+	    </el-table-column>
 
           <el-table-column prop="date" label="操作" align="center" width="300">
             <template slot-scope="scope">
@@ -107,13 +113,17 @@ export default {
       },
       // 当前时间戳
       Timestamp: this.$moment().format("X"),
-     
+
       visible: false,
       loading: true
     };
   },
   methods: {
     addHandle() {
+      if (this.planList.total >= 10) {
+        this.$message.error("最多可创建10条方案");
+        return false;
+      }
       this.visible = true;
       this.plan_name = "";
     },
@@ -189,9 +199,9 @@ export default {
 <style scoped>
 .tools {
   padding: 10px 0;
-  display: flex
+  display: flex;
 }
-.tools span{
-	display: inline-block
+.tools span {
+  display: inline-block;
 }
 </style>

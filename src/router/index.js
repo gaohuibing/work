@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import api from '../utils/api';
-import Login from '@/components/pages/Login'
+import Login from '@/components/pages/Login';
+import sigin from '@/components/pages/Sigin';
+import reset from '@/components/pages/Reset';
+import welcome from '@/components/pages/welcome';
 
 Vue.use(Router)
 
@@ -15,6 +18,18 @@ export default new Router({
     routes: [{
             path: '/Login',
             component: Login
+        },
+        {
+            path: '/sigin',
+            component: sigin
+        },
+        {
+            path: '/reset',
+            component: reset
+        },
+        {
+            path: '/welcome',
+            component: welcome
         },
         {
             path: '/goods_preview_tel',

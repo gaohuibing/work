@@ -1,20 +1,23 @@
 <template>
   <div class="login">
     <form>
-      <div class="login-item">
+      <div class="login-item" :class="{'active':!isMobile}">
         <img src="../../../assets/images/user.png" alt class="x-icon" />
-        <el-input v-model="mobile" placeholder="请输入手机号"></el-input>
+        <el-input v-model="mobile" placeholder="请输入手机号" @blur="mobileBlur"></el-input>
+        <span class="tip">{{mobileText}}</span>
       </div>
-      <div class="login-item">
+      <div class="login-item" :class="{'active':!isPassword}">
         <img src="../../../assets/images/pwd.png" alt class="x-icon" />
-        <el-input placeholder="请输入密码" v-model="password" show-password></el-input>
+        <el-input placeholder="请输入密码" v-model="password" show-password @blur="passwordBlur"></el-input>
+        <span class="tip">{{passwordText}}</span>
       </div>
-      <div class="login-item">
+      <div class="login-item" :class="{'active':!isCaptcha}">
         <img src="../../../assets/images/code.png" alt class="x-icon" />
-        <el-input placeholder="请输入验证码" v-model="captcha" style="width:140px"></el-input>
+        <el-input placeholder="请输入验证码" v-model="captcha" style="width:140px" @blur="captchaBlur"></el-input>
         <div class="getcode" @click="getImgCode">
           <img :src="imgCode" alt style="width:100%;height:100%" />
         </div>
+        <span class="tip">{{captchaText}}</span>
       </div>
       <div class>
         <el-button type="primary" size="small" style="width:100%;font-size:16px" @click="login">登录</el-button>
@@ -41,7 +44,14 @@ export default {
       captcha: "",
       checked: true,
       imgCode: "",
-      key: ""
+      key: "",
+      // 验证相关
+      isMobile: true,
+      mobileText: "",
+      isPassword: true,
+      passwordText: "",
+      isCaptcha: true,
+      captchaText: ""
     };
   },
   methods: {
@@ -59,59 +69,47 @@ export default {
           this.$message.error({ message: err });
         });
     },
-    login() {
-      if (this.mobile == "") {
-        this.$message.error({ message: "请输入手机号" });
-        return false;
-      }
-      if (this.mobile.match(reg) == null) {
-        this.$message.error({ message: "手机号格式错误" });
-        return false;
-      }
-      if (this.password == "") {
-        this.$message.error({ message: "请输入密码" });
-        return false;
-      }
-      if (this.captcha == "") {
-        this.$message.error({ message: "请输入图形验证码" });
-        return false;
-      }
-      this.$api
-        .post("user/user_login", {
-          mobile: this.mobile,
-          password: this.password,
-          captcha: this.captcha,
-          key: this.key
-        })
-        .then(res => {
-          if (res.data.code == 200) {
-            let token = res.data.token;
-            if (!token) {
-              this.$message.error({ message: "没有返回token" });
-              return false;
+    login() {      
+      if (this.mobileBlur() && this.passwordBlur() && this.captchaBlur()) {
+        this.$api
+          .post("user/user_login", {
+            mobile: this.mobile,
+            password: this.password,
+            captcha: this.captcha,
+            key: this.key
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              let token = res.data.token;
+              if (!token) {
+                this.$message.error({ message: "没有返回token" });
+                return false;
+              }
+              this.$api.setToken(token);
+              if (this.checked) {
+                store.set("username", this.mobile);
+              }
+              this.getUserInfo(token);
+            } else {
+              this.$message.error({ message: res.data.msg });
             }
-            this.$api.setToken(token);
-            if (this.checked) {
-              store.set("username", this.mobile);
-            }
-            this.getUserInfo(token);
-          } else {
-            this.$message.error({ message: res.data.msg });
-          }
-        })
-        .catch(err => {
-          this.$message.error({ message: err });
-        });
+          })
+          .catch(err => {
+            this.$message.error({ message: err });
+          });
+      } else {
+        return false;
+      }
     },
     getUserInfo(token) {
       this.$api
         .get("user/get_user", {
-          api_token: token        
+          api_token: token
         })
         .then(res => {
           if (res.data.code == 200) {
-		let userInfo=res.data.data;
-		store.set('userInfo',userInfo);   
+            let userInfo = res.data.data;
+            store.set("userInfo", userInfo);
             setTimeout(h => {
               window.location.href = "/";
             });
@@ -126,6 +124,43 @@ export default {
     // 找回密码
     findPwd() {
       this.$emit("update:isGetPwd", true);
+    },
+    mobileBlur() {
+      if (this.mobile == "") {
+        this.isMobile = false;
+        this.mobileText = "请输入手机号";
+        return false;
+      } else if (this.mobile.match(reg) == null) {
+        this.isMobile = false;
+        this.mobileText = "手机号格式错误";
+        return false;
+      } else {
+        this.isMobile = true;
+        this.mobileText = "";
+        return true;
+      }
+    },
+    passwordBlur() {
+      if (this.password == "") {
+        this.isPassword = false;
+        this.passwordText = "请输入密码";
+        return false;
+      } else {
+        this.isPassword = true;
+        this.passwordText = "";
+        return true;
+      }
+    },
+    captchaBlur() {
+      if (this.captcha == "") {
+        this.isCaptcha = false;
+        this.captchaText = "请输入验证码";
+        return false;
+      } else {
+        this.isCaptcha = true;
+        this.captchaText = "";
+        return true;
+      }
     }
   },
   watch: {}

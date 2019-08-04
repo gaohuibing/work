@@ -1,4 +1,5 @@
 import { regionData } from "element-china-area-data";
+import regionData1 from "../assets/region1";
 const common = {
     /**
      * 区域code转中文
@@ -84,7 +85,86 @@ const common = {
         }
         return true
     },
+    /**
+     * 
+     * @param {*code ,相隔} value 
+     */
+    regionValueToLabel(value) {
+        let regionData = JSON.parse(JSON.stringify(regionData1));
+        let regionLabel = '';
+        if (value) {
+            if (value == "all") {
+                regionLabel = "全国";
+            } else {
+                let regionLabelArr = [];
+                let regionArr = value.split(",");
+                regionArr.map(region => {
+                    regionData.find(area => {
+                        // 若区域中有匹配的value
+                        area.value == region ? (area.select = true) : "";
+                    });
 
+                    regionData.map(area => {
+                        // 如果此区域勾选 
+                        if (area.select) {
+                            area.children.map(prionce => {
+                                regionLabelArr.push(prionce.label);
+
+                            });
+                        } else {
+                            // 如果此区域没有勾选
+                            area.children.find(prionce => {
+                                // 若省中有匹配的value
+                                if (prionce.value == region) {
+                                    prionce.select = true;
+                                }
+                            });
+                            // 否则 遍历省
+                            area.children.map(prionce => {
+                                // 如果此省已勾选
+                                if (prionce.select) {
+                                    regionLabelArr.push(prionce.label);
+                                } else {
+                                    // 否则
+                                    prionce.children.find(city => {
+                                        if (city.value == region) {
+                                            regionLabelArr.push(city.label);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+                regionLabel = regionLabelArr.join(",");
+            }
+        } else {
+
+        }
+        return regionLabel
+    },
+    limit(value) {
+        // 通过正则过滤小数点后两位
+        //     this.s_sell_price= this.s_sell_price.replace(/[^\a-\z\A-\Z0-9]/g, '');
+        var price = "" + value;
+        price = price
+            .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
+            .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+            .replace(".", "$#$")
+            .replace(/\./g, "")
+            .replace("$#$", ".")
+            .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
+        if (price.indexOf(".") < 0 && price != "") {
+            // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            price = parseFloat(price);
+        }
+        price = price + "";
+        if (price.split(".")[0].length > 7) {
+            price = `
+          ${price.split(".")[0].slice(0, 7)}`;
+        }
+        return price
+    }
 
 
 

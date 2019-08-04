@@ -38,13 +38,21 @@
             <el-select v-model="filter.price_type" placeholder="请选择">
               <el-option v-for="(item,key) in price_types" :key="key" :label="item" :value="key"></el-option>
             </el-select>
+          </div>￥
+          <div class="inp-box" style="width:100px;margin-left:5px;">
+            <el-input
+              v-model="filter.min_price"
+              placeholder="最低"
+              :change="limit('filter.min_price',filter.min_price)"
+            >2</el-input>
           </div>
-          <div class="inp-box" style="width:100px;margin-left:5px">
-            <el-input v-model="filter.min_price" placeholder="¥ 最低" type="number"></el-input>
-          </div>
-          <em style="color:#999;margin:0 5px">-</em>
-          <div class="inp-box" style="width:100px">
-            <el-input v-model="filter.max_price" placeholder="¥ 最高" type="number"></el-input>
+          <em style="color:#999;margin:0 5px">-</em>￥
+          <div class="inp-box" style="width:100px;">
+            <el-input
+              v-model="filter.max_price"
+              placeholder="最高"
+              :change="limit('filter.max_price',filter.max_price)"
+            >1</el-input>
           </div>
         </div>
         <div class="reset">
@@ -69,8 +77,8 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="id" type="selection"></el-table-column>
-        <el-table-column label="商品" width="250">
+        <el-table-column prop="id" type="selection" width="30"></el-table-column>
+        <el-table-column label="商品" width="240">
           <template slot-scope="scope">
             <div class="goodinfo clearfix">
               <div class="pic">
@@ -78,8 +86,11 @@
               </div>
               <div class="info">
                 <h5>{{scope.row.goods_name}}</h5>
-                <p class="market-price">市场价：¥{{scope.row.s_market_price}}</p>
-                <p class="normal-price">成本价：¥{{scope.row.s_cost_price}}</p>
+
+                <p class="normal-price">
+                  <span style="color:#1c1c1c">自营成本价：</span>
+                  ¥{{scope.row.s_cost_price}}
+                </p>
               </div>
             </div>
           </template>
@@ -87,7 +98,10 @@
         <el-table-column label="分类" align="center">
           <template slot-scope="scope">{{scope.row.first_sort}} / {{scope.row.second_sort}}</template>
         </el-table-column>
-        <el-table-column label="销售价" align="center">
+        <el-table-column label="市场价" align="center" width="100">
+          <template slot-scope="scope">￥{{scope.row.s_market_price}}</template>
+        </el-table-column>
+        <el-table-column label="销售价" align="center" width="100">
           <template slot-scope="scope">￥{{scope.row.s_sell_price}}</template>
         </el-table-column>
         <el-table-column prop="s_stock" label="库存" align="center"></el-table-column>
@@ -96,14 +110,14 @@
             <span>{{scope.row.view_num}}/{{scope.row.sell_num}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="更新时间" align="center">
+        <el-table-column label="更新时间" align="center" width="100">
           <template slot-scope="scope">
             {{$moment(scope.row.updated_at?scope.row.updated_at:scope.row.created_at).format('YYYY-MM-DD HH:mm:ss').split(' ')[0]}}
             <br />
             {{$moment(scope.row.updated_at?scope.row.updated_at:scope.row.created_at).format('YYYY-MM-DD HH:mm:ss').split(' ')[1]}}
           </template>
         </el-table-column>
-        <el-table-column prop="date" label="操作" align="center" width="180">
+        <el-table-column prop="date" label="操作" align="center" width="154">
           <template slot-scope="scope">
             <a @click.prevent="copy(scope.row.id)" style="padding:0 7px;cursor: pointer">复制</a>
             <a
@@ -111,7 +125,7 @@
               style="padding:0 7px;color:#44B549;cursor: pointer"
             >编辑</a>
             <a
-              @click.prevent="delHandle(scope.row.id)"
+              @click.prevent="delHandle(scope.row.id,all=false)"
               style="padding:0 7px;color:#999;cursor: pointer"
             >删除</a>
           </template>
@@ -129,13 +143,13 @@
         <el-popover
           placement="top"
           title="加入下载"
-          width="400"
-          trigger="click"
+          width="300"
+          trigger="manual"
           v-model="dvisilbe"
           style="margin:0 10px"
         >
           <div class="downitem">
-            <span>选择分组：</span>
+            <span style="width:96px">选择分组：</span>
             <el-select v-model="planId" placeholder="请选择" style="width:200px;margin:0 10px">
               <el-option
                 v-for="item in planList.data"
@@ -144,15 +158,15 @@
                 :value="item.id"
               ></el-option>
             </el-select>
-            <a style="color:#69c46d;cursor:pointer" @click="visible = true">新建</a>
+            <a style="color:#69c46d;cursor:pointer;width:40px" @click="newDownload">新建</a>
           </div>
           <div class="botd-tools" style="text-align:center;margin:20px 0">
             <el-button type="primary" @click="downloadConfirm" size="small">确定</el-button>
             <el-button @click="dvisilbe=false" size="small">取消</el-button>
           </div>
-          <el-button slot="reference" size="small">加入下载</el-button>
+          <el-button slot="reference" size="small" @click="downloadAdd">加入下载</el-button>
         </el-popover>
-        <el-button size="small" @click="delHandle(multipleSelection.join(','))">删除</el-button>
+        <el-button size="small" @click="delHandle(multipleSelection.join(','),all=true)">删除</el-button>
       </div>
       <div class="flex-grow pagi-wrap" v-if="goodLists.total-0>0">
         <div>共{{goodLists.total}}条，每页{{filter.limits}}条</div>
@@ -167,13 +181,27 @@
         ></el-pagination>
         <div>
           到第
-          <el-input v-model="page" class="topage"></el-input>页
+          <el-input v-model="page" class="topage" :change='limit("page",page)'></el-input>页
           <el-button size="small" class="pageBtn" @click="toPage">GO</el-button>
         </div>
       </div>
     </div>
     <!-- // 添加方案 -->
     <painDialog :visible.sync="visible"></painDialog>
+    <!-- 加入下载成功后弹窗 -->
+    <el-dialog :visible.sync="submitVisible" title="商品加入下载成功" width="30%" class="submitDialog">
+      <div style="display:flex;align-items:center">
+        <i class="el-icon-success" style="color:#44B549;font-size:20px;margin-right:6px"></i>
+        商品加入下载成功，你可以进行以下快捷操作
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitVisible=false" size="small">确认完成</el-button>
+        <el-button
+          @click="submitVisible=false;$router.replace('/company/download/programme');"
+          size="small"
+        >查看下载中心</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -233,6 +261,7 @@ export default {
       isIndeterminate: false,
       checkAll: false,
       page: "",
+
       loading: true,
       planList: {
         data: [],
@@ -240,7 +269,8 @@ export default {
       },
       planId: "",
       dvisilbe: false,
-      visible: false
+      visible: false,
+      submitVisible: false
     };
   },
 
@@ -253,7 +283,7 @@ export default {
         return item.id;
       });
       if (0 === multipleSelection.length) {
-        this.multipleSelection = undefined;
+        this.multipleSelection = [];
       } else {
         this.multipleSelection = multipleSelection;
       }
@@ -284,16 +314,20 @@ export default {
         });
     },
     //删除数据
-    delHandle(ids) {
+    delHandle(ids, all) {
+      if (all && this.multipleSelection.length < 1) {
+        this.$message.error("请先选择商品");
+        return false;
+      }
       this.$confirm(
-        "您所选商品有正在被活动使用，如确定 删除，活动中的商品也将被强制删除， 并且不可恢复?",
+        "<span style='color:red'>谨慎操作，删除后所有活动中均无此商品！</span>",
         "确定删除!",
         {
+          dangerouslyUseHTMLString: true,
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          center: false,
-          showClose: false,
-          width: "271"
+          center: true,
+          showClose: false
         }
       ).then(() => {
         this.$api
@@ -388,7 +422,7 @@ export default {
               });
             });
             this.goodsType = [
-              { id: 0, is_enable: 1,second_sort:'', sort_name: "全部" },
+              { id: 0, is_enable: 1, second_sort: "", sort_name: "全部" },
               ...goodsType
             ];
           } else {
@@ -400,12 +434,12 @@ export default {
         });
     },
     //  商品分类选择
-    handleGoodsTypeChange(data) {	  
+    handleGoodsTypeChange(data) {
       if (data[0]) {
         this.filter.first_sort = data[0];
         this.filter.second_sort = data[1] - data[0];
       } else {
-        this.filter.first_sort = '';
+        this.filter.first_sort = "";
         this.filter.second_sort = "";
       }
     },
@@ -439,18 +473,47 @@ export default {
         max_price: "",
         page: "1",
         limits: "10"
-	};
-	this.selectGoodsType=[0];
+      };
+      this.selectGoodsType = [0];
       this.getWarehouse();
     },
     // 前往第几页
     toPage() {
+      let pageCount =
+        this.goodLists.total % this.filter.limits
+          ? (this.goodLists.total / this.filter.limits).toFixed("0") - 0 + 1
+          : this.goodLists.total / this.filter.limits;
+
+      if (this.page > pageCount || this.page < 1 || this.page == "") {
+        this.$message.error("无对应页码");
+        return false;
+      }
+      if (this.page == this.filter.page) {
+        return false;
+      }
       this.filter.page = this.page;
       this.getWarehouse();
     },
     handleCurrentChange(page) {
       this.filter.page = page;
       this.getWarehouse();
+    },
+    // 加入下载弹窗
+    downloadAdd() {
+      if (this.multipleSelection.length < 1) {
+        this.$message.error("请至少选择一个商品");
+        return false;
+      } else {
+        this.dvisilbe = !this.dvisilbe;
+      }
+    },
+    // 新建下载
+    newDownload() {
+      if (this.planList.total >= 10) {
+        this.$message.error("最多可创建10条方案");
+        return false;
+      }
+      this.visible = true;
     },
     // 下载方案列表
     loadPlanList() {
@@ -496,7 +559,8 @@ export default {
               type: "success"
             });
             this.dvisilbe = false;
-            this.multipleSelection = [];
+            this.getWarehouse();
+            this.submitVisible = true;
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -514,11 +578,40 @@ export default {
           goodsId: id
         }
       });
+    },
+    limit(obj, value) {
+      // 通过正则过滤小数点后两位
+      //     this.s_sell_price= this.s_sell_price.replace(/[^\a-\z\A-\Z0-9]/g, '');
+      var price = "" + value;
+      price = price
+        .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
+        .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+        .replace(".", "$#$")
+        .replace(/\./g, "")
+        .replace("$#$", ".")
+        .replace(/^(\-)*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
+      if (price.indexOf(".") < 0 && price != "") {
+        // 以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        price = parseFloat(price);
+      }
+      price = price + "";
+      if (price.split(".")[0].length > 7) {
+        price = `
+          ${price.split(".")[0].slice(0, 7)}`;
+      }
+      if (obj.split(".")[1]) {
+        this[`${obj.split(".")[0]}`][`${obj.split(".")[1]}`] = price;
+      } else {
+        this[obj] = price;
+      }
     }
   },
   watch: {
-    multipleSelection(v) {
-      console.log(v);
+    "goodLists.total"(value) {
+      if (value == (this.filter.page - 1) * this.filter.limits && value != 0) {
+        this.filter.page -= 1;
+        this.getWarehouse(); //获取列表数据
+      }
     }
   }
 };
@@ -534,11 +627,17 @@ export default {
 }
 .goodinfo .pic img {
   width: 100%;
+  height: 100%;
 }
 .goodinfo .info {
-  width: 140px;
+  width: 130px;
   float: left;
   margin-left: 10px;
+  display: flex;
+  justify-content: space-between;
+  height: 80px;
+  padding: 5px 0;
+  flex-direction: column;
 }
 .goodinfo .info h5 {
   font-size: 14px;

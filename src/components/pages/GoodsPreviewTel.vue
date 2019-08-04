@@ -15,7 +15,7 @@
       </p>
       <p
         style="color:red;font-size:24px;margin-top:10px;line-height1"
-      >{{currentPreviewData.sell_price}}</p>
+      >￥{{currentPreviewData.sell_price}}</p>
     </div>
     <div class="pre-item">
       <div>

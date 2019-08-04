@@ -11,8 +11,8 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="currentVisible=false">取 消</el-button>
-        <el-button type="primary" @click="confirmHandle">确 定</el-button>
+        <el-button @click="currentVisible=false" size="small">取 消</el-button>
+        <el-button type="primary" @click="confirmHandle" size="small">确 定</el-button>
       </span>
     </el-dialog>
   </div>

@@ -11,8 +11,8 @@ html {
 
 html,
 body {
-    -webkit-user-select: none;
-    user-select: none;
+    /* -webkit-user-select: none;
+    user-select: none; */
     background: #f5f5f5;
     font-size: 14px
 }
@@ -807,4 +807,17 @@ a {
 
 .good-edit {
     padding-bottom: 90px
+}
+
+.login-main .login-item.active {
+    border-color: #e81717
+}
+
+.login-main .login-item .tip {
+    font-size: 12px;
+    position: absolute;
+    bottom: -20px;
+    color: #e81717;
+    left: 0;
+    z-index: 999;
 }

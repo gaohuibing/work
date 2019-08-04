@@ -77,7 +77,8 @@ export default {
                 description: data.description,
                 goodsImgs: JSON.stringify(data.goods_images.slice(0, 5)),
                 goodsDetail: data.goods_detail,
-                goodsName: data.goods_name,
+		    goodsName: data.goods_name,
+		    goods_price:data.goods_price,
                 isExport: true
               }
             });

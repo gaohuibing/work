@@ -1,23 +1,14 @@
 <template>
   <div>
-    <el-button @click="selectAdress">选择地区</el-button>
-    <div>选择的省份：{{regionLabel}}</div>
+    {{regionLabel}}
+    <a style="color:#44B549" @click.prevent="selectAdress">编辑</a>
+
     <el-dialog :visible.sync="dialogVisible" width="60%">
       <div class="regionbox">
-        <!-- // 全选 -->
-        <div class="area">
-          <div class="selection">
-            <el-checkbox
-              :indeterminate="indeterminate"
-              v-model="ischeckAll"
-              @change="handleCheckAllChange"
-            >全部</el-checkbox>
-          </div>
-        </div>
         <template v-for="(item,index) in regionData">
           <div class="area" :key="index">
             <!-- 第一层 -->
-            <div class="selection">
+            <div class="selection selection-area">
               <el-checkbox
                 :indeterminate="item.indeterminate"
                 v-model="item.select"
@@ -32,6 +23,7 @@
                   width="200"
                   trigger="hover"
                   :key="proinceIndex"
+                  class="selection-proince"
                 >
                   <!-- 第三层 -->
                   <template v-for="(city,cityIndex) in proince.children">
@@ -48,29 +40,44 @@
                       v-model="proince.select"
                       @change="handleCheckedProinceAllChange(item,proince,$event)"
                     >{{proince.label}}{{proince.selectNum?`(${proince.selectNum})`:''}}</el-checkbox>
+                    <i class="el-icon-arrow-down" style="cursor:pointer"></i>
                   </div>
                 </el-popover>
               </template>
             </div>
           </div>
         </template>
+        <!-- // 全选 -->
+        <div class="area">
+          <div class="selection selection-area" style="margin-top:20px">
+            <el-checkbox
+              :indeterminate="indeterminate"
+              v-model="ischeckAll"
+              @change="handleCheckAllChange"
+            >全部</el-checkbox>
+          </div>
+        </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirm ">确 定</el-button>
       </span>
     </el-dialog>
-    <draggable v-model="myArray" group="people" @start="drag=true" @end="drag=false;">
-      <div v-for="(element,index) in myArray" :key="index">{{element}}</div>
-    </draggable>
   </div>
 </template>
 
 <script>
-import regionData from "../../assets/region1";
-import draggable from "vuedraggable";
+import regionData from "../../../../assets/region1";
 export default {
-	components:{draggable},
+  mounted() {
+    this.regionDataReset();
+  },
+  props: { regionValueProps: String },
+  computed: {
+    regionValue() {
+      return regionValueProps;
+    }
+  },
   data() {
     return {
       regionData: regionData,
@@ -78,9 +85,8 @@ export default {
       ischeckAll: false,
       indeterminate: false,
       dialogVisible: false,
-      regionLabel: "",
-	regionValue: "",
-	myArray:[1,2,34,214,43643]
+      regionLabel: ""
+      // regionValue: ""
     };
   },
   computed: {
@@ -89,8 +95,10 @@ export default {
     // 	  return Object.freeze()
     //   }
   },
-  
-  mounted() {},
+  mounted() {
+    this.regionValue = this.regionValueProps;
+    this.regionDataReset();
+  },
   methods: {
     handleCheckAllChange(e) {
       //一级change事件
@@ -285,6 +293,7 @@ export default {
       this.regionLabel = regionLabel.join(",");
       this.regionValue = regionValue.join(",");
       this.dialogVisible = false;
+      this.$emit("update:regionValueProps", this.regionValue);
     },
 
     // 通过regionValue设置regionData
@@ -293,14 +302,19 @@ export default {
       this.regionData = JSON.parse(JSON.stringify(this.regionDataOrigin));
       if (this.regionValue) {
         if (this.regionValue == "all") {
+          this.regionLabel = "全国";
           let e = true;
           this.handleCheckAllChange(e);
         } else {
+          let regionLabelArr = [];
           let regionArr = this.regionValue.split(",");
           regionArr.map(region => {
             this.regionData.find(area => {
               // 若区域中有匹配的value
-              area.value == region ? (area.select = true) : "";
+              if (area.value == region) {
+                area.select = true;
+                this.indeterminate = true;
+              }
             });
 
             this.regionData.map(area => {
@@ -309,6 +323,7 @@ export default {
                 area.children.map(prionce => {
                   prionce.select = true;
                   prionce.selectNum = prionce.children.length;
+                  regionLabelArr.push(prionce.label);
                   prionce.children.map(city => {
                     city.select = true;
                   });
@@ -320,6 +335,8 @@ export default {
                   if (prionce.value == region) {
                     prionce.select = true;
                     area.indeterminate = true;
+                    this.indeterminate = true;
+                    regionLabelArr.push(prionce.label);
                   }
                 });
                 // 否则 遍历省
@@ -335,8 +352,10 @@ export default {
                     prionce.children.find(city => {
                       if (city.value == region) {
                         city.select = true;
+                        regionLabelArr.push(city.label);
                         prionce.indeterminate = true;
                         area.indeterminate = true;
+                        this.indeterminate = true;
                       }
                     });
                     let selectNum = 0;
@@ -351,21 +370,24 @@ export default {
               }
             });
           });
+          this.regionLabel = regionLabelArr.join(",");
         }
       } else {
         this.indeterminate = false;
         this.ischeckAll = false;
       }
     },
+    // 通过regionValue 设置 regionLabel
+    setRegionLabel() {},
     selectAdress() {
       this.regionDataReset();
       this.dialogVisible = true;
     }
   },
-  watch:{
-	  myArray(value){
-		  console.log(value)
-	  }
+  watch: {
+    regionValue(value) {
+      console.log(value);
+    }
   }
 };
 </script>
@@ -378,9 +400,19 @@ export default {
 .proince {
   display: flex;
   margin-left: 20px;
+  flex-grow: 1;
   flex-flow: row wrap;
 }
 .selection {
-  margin: 10px;
+  margin-bottom: 10px;
+}
+.selection-proince {
+  width: 33%;
+  text-align: left;
+}
+.selection-area {
+  width: 250px;
+  text-align: left;
+  padding-left: 40px;
 }
 </style>

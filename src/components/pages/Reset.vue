@@ -7,7 +7,7 @@
         <p>让个体成为平台&nbsp;&nbsp;&nbsp;&nbsp;用平台成就个体</p>
       </div>
       <div class="right-main">
-        <div class="title">商户登录</div>
+        <div class="title">重置密码</div>
         <div class="login">
           <form>
             <div class="login-item" :class="{'active':!isMobile}">
@@ -15,40 +15,48 @@
               <el-input v-model="mobile" placeholder="请输入手机号" @blur="mobileBlur"></el-input>
               <span class="tip">{{mobileText}}</span>
             </div>
-            <div class="login-item" :class="{'active':!isPassword}">
-              <img src="../../assets/images/pwd.png" alt class="x-icon" />
-              <el-input placeholder="请输入密码" v-model="password" show-password @blur="passwordBlur"></el-input>
-              <span class="tip">{{passwordText}}</span>
-            </div>
             <div class="login-item" :class="{'active':!isCaptcha}">
               <img src="../../assets/images/code.png" alt class="x-icon" />
-              <el-input
-                placeholder="请输入验证码"
-                v-model="captcha"
-                style="width:140px"
-                @blur="captchaBlur"
-              ></el-input>
-              <div class="getcode" @click="getImgCode">
-                <img :src="imgCode" alt style="width:100%;height:100%" />
-              </div>
-
+              <el-input placeholder="请输入验证码" v-model="code" style="width:140px" @blur="captchaBlur"></el-input>
+              <div
+                class="getcode"
+                @click="getCode"
+                :style="{'color':isGet?'#ddd':'','border-color':isGet?'#ddd':''}"
+              >{{codeBtn}}</div>
               <span class="tip">{{captchaText}}</span>
             </div>
-            <div style="padding:0 0 20px 5px">
-              <el-checkbox v-model="checked">记住账号</el-checkbox>
+            <div class="login-item" :class="{'active':!isPassword}">
+              <img src="../../assets/images/pwd.png" alt class="x-icon" />
+              <el-input
+                placeholder="请输入密码"
+                v-model="new_pwd"
+                show-password
+                @blur="passwordBlur"
+                auto-complete="new-password"
+              ></el-input>
+              <span class="tip">{{passwordText}}</span>
             </div>
-
-            <div class>
+            <div class="login-item" :class="{'active':!isRepassword}">
+              <img src="../../assets/images/pwd.png" alt class="x-icon" />
+              <el-input
+                placeholder="确认密码"
+                v-model="re_pwd"
+                show-password
+                @blur="repasswordBlur"
+                auto-complete="new-password"
+              ></el-input>
+              <span class="tip">{{repasswordText}}</span>
+            </div>
+            <div class style="margin-top:13px">
               <el-button
                 type="primary"
                 size="small"
                 style="width:100%;font-size:16px"
-                @click="login"
-              >登录</el-button>
+                @click="resetPwd"
+              >重置密码</el-button>
             </div>
-            <div class="login-tools">
-              <span class="findpwd" @click="toSigin">注册账号</span>
-              <span class="findpwd" @click="findPwd">忘记密码？</span>
+            <div class="login-tools">         
+              <span class="findpwd" @click="goLogin">返回登录</span>
             </div>
           </form>
         </div>
@@ -75,88 +83,57 @@ import AppHeader from "@/components/common/header";
 export default {
   components: { AppHeader },
   mounted() {
-    this.getImgCode();
+    
   },
   data() {
     return {
-      mobile: store.get("username") || "",
-      password: "",
-      captcha: "",
+      codeBtn: "获取验证码",
+      isGet: false,
+      codeTime: 60,
+      input: "",
       checked: true,
-      imgCode: "",
-      key: "",
+      mobile: store.get("username") || "",
+      new_pwd: "",
+      re_pwd: "",
+      code: "",
       // 验证相关
       isMobile: true,
       mobileText: "",
       isPassword: true,
       passwordText: "",
+      isRepassword: true,
+      repasswordText: "",
       isCaptcha: true,
       captchaText: ""
     };
   },
   methods: {
-    toLogin() {},
-    toSigin() {
-      this.$router.push("./sigin");
-    },
-    //获取图形验证码
-    getImgCode() {
-      this.$api
-        .get("user/captcha")
-        .then(res => {
-          if (res.data.code == 200) {
-            this.imgCode = res.data.url.img;
-            this.key = res.data.url.key;
-          }
-        })
-        .catch(err => {
-          this.$message.error({ message: err });
-        });
-    },
-    login() {
-      if (this.mobileBlur() && this.passwordBlur() && this.captchaBlur()) {
-        this.$api
-          .post("user/user_login", {
-            mobile: this.mobile,
-            password: this.password,
-            captcha: this.captcha,
-            key: this.key
-          })
-          .then(res => {
-            if (res.data.code == 200) {
-              let token = res.data.token;
-              if (!token) {
-                this.$message.error({ message: "没有返回token" });
-                return false;
-              }
-              this.$api.setToken(token);
-              if (this.checked) {
-                store.set("username", this.mobile);
-              }
-              this.getUserInfo(token);
-            } else {
-              this.$message.error({ message: res.data.msg });
-            }
-          })
-          .catch(err => {
-            this.$message.error({ message: err });
-          });
-      } else {
+    // 获取验证码
+    getCode() {
+      if (!this.mobileBlur()) {
         return false;
       }
-    },
-    getUserInfo(token) {
+      if (this.isGet) {
+        return false;
+      }
       this.$api
-        .get("user/get_user", {
-          api_token: token
+        .post("user/send_code_pwd", {
+          mobile: this.mobile
         })
         .then(res => {
           if (res.data.code == 200) {
-            let userInfo = res.data.data;
-            store.set("userInfo", userInfo);
-            setTimeout(h => {
-              window.location.href = "/";
-            });
+            this.codeBtn = `${this.codeTime}s`;
+            this.isGet = true;
+
+            let timer = setInterval(h => {
+              this.codeBtn = `${this.codeTime - 1}s`;
+              this.codeTime--;
+              if (this.codeTime <= 0) {
+                clearInterval(timer);
+                this.isGet = false;
+                this.codeBtn = "重新获取";
+              }
+            }, 1000);
           } else {
             this.$message.error({ message: res.data.msg });
           }
@@ -165,9 +142,41 @@ export default {
           this.$message.error({ message: err });
         });
     },
-    // 找回密码
-    findPwd() {
-      this.$router.push('./reset');
+    // 重置密码
+    resetPwd() {
+      if (
+        this.mobileBlur() &&
+        this.passwordBlur() &&
+        this.repasswordBlur() &&
+        this.captchaBlur()
+      ) {
+        this.$api
+          .post("user/reset_pwd", {
+            mobile: this.mobile,
+            new_pwd: this.new_pwd,
+            re_pwd: this.re_pwd,
+            code: this.code
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              this.$message({
+                message: "重置密码成功，请登录",
+                type: "success"
+              });
+              setTimeout(h => {
+                this.goLogin();
+              }, 1000);
+            } else {
+              this.$message.error({ message: res.data.msg });
+            }
+          })
+          .catch(err => {
+            this.$message.error({ message: err });
+          });
+      }
+    },
+    goLogin() {
+      this.$router.replace('./login')
     },
     mobileBlur() {
       if (this.mobile == "") {
@@ -185,7 +194,7 @@ export default {
       }
     },
     passwordBlur() {
-      if (this.password == "") {
+      if (this.new_pwd == "") {
         this.isPassword = false;
         this.passwordText = "请输入密码";
         return false;
@@ -195,8 +204,23 @@ export default {
         return true;
       }
     },
+    repasswordBlur() {
+      if (this.new_pwd == "") {
+        this.isRepassword = false;
+        this.repasswordText = "请重复密码";
+        return false;
+      } else if (this.new_pwd != this.re_pwd) {
+        this.isRepassword = false;
+        this.repasswordText = "密码不一致";
+        return false;
+      } else {
+        this.isRepassword = true;
+        this.repasswordText = "";
+        return true;
+      }
+    },
     captchaBlur() {
-      if (this.captcha == "") {
+      if (this.code == "") {
         this.isCaptcha = false;
         this.captchaText = "请输入验证码";
         return false;
@@ -284,5 +308,6 @@ export default {
   color: #999999;
   cursor: pointer;
 }
+
 </style>
  

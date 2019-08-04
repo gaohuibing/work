@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-dialog :visible.sync="dialogVisible" width="60%">
+  <div class="my-dialog">
+    <el-dialog :visible.sync="dialogVisible" customClass="">
       <div class="previewbox">
         <!-- left -->
         <div class="iphone-bg">
@@ -20,9 +20,13 @@
                   <div class="pre-item">
                     <p>
                       市场价
-                      <span style="text-decoration: line-through">￥{{currentPreviewData.s_market_price}}</span>
+                      <span
+                        style="text-decoration: line-through"
+                      >￥{{currentPreviewData.s_market_price}}</span>
                     </p>
-                    <p style="color:red;font-size:24px;margin-top:10px;line-height1">{{currentPreviewData.s_sell_price}}</p>
+                    <p
+                      style="color:red;font-size:24px;margin-top:10px;line-height1"
+                    >￥{{currentPreviewData.s_sell_price}}</p>
                   </div>
                   <div class="pre-item">
                     <div>
@@ -39,7 +43,7 @@
                       <span class="gray">{{userInfo.enterprise}}</span>
                     </div>
                     <i class="el-icon-phone" style="color:#44b549;font-size:20px"></i>
-                  </div> -->
+                  </div>-->
                   <div class="goods-details">
                     <div class="detail-tit">商品详情</div>
                     <div class="detail-content">
@@ -80,28 +84,33 @@ import VueScrollbar from "vue2-scrollbar";
 export default {
   props: ["previewVisble", "previewData"],
   components: { VueScrollbar },
-  mounted() {
-   
-  },
+  mounted() {},
   data() {
     return {
       dialogVisible: false,
       currentPreviewData: "",
-    
-	currentImg:[],
-	userInfo:store.get('userInfo')
+
+      currentImg: [],
+      userInfo: store.get("userInfo")
     };
   },
   methods: {
     pcPreview() {
-      this.$router.push({
+      // this.$router.push({
+      //   path: "/goods_preview",
+      //   query: {
+      //     preview: JSON.stringify(this.currentPreviewData)
+      //   }
+      // });
+      const { href } = this.$router.resolve({
         path: "/goods_preview",
         query: {
           preview: JSON.stringify(this.currentPreviewData)
         }
       });
+      window.open(href, "_blank");
     },
-   
+
     imgHandle(pic) {
       this.currentImg = pic.pic_path;
     }
@@ -114,14 +123,14 @@ export default {
       this.$emit("update:previewVisble", v);
     },
     previewData(v) {
-	this.currentPreviewData = JSON.parse(v);
-	if (this.currentPreviewData.pics.length) {
-          this.currentImg = this.currentPreviewData.pics[0].pic_path;
-        }
+      this.currentPreviewData = JSON.parse(v);
+      if (this.currentPreviewData.pics.length) {
+        this.currentImg = this.currentPreviewData.pics[0].pic_path;
+      }
 
-        this.$nextTick(function() {          
-          document.getElementById("scroll").scrollTop = 0;
-	  });	  
+      this.$nextTick(function() {
+        document.getElementById("scroll").scrollTop = 0;
+      });
     }
   }
 };
@@ -240,10 +249,13 @@ export default {
 </style>
 <style>
 .detail-content * {
-	max-width: 100%;
+  max-width: 100%;
 }
 .detail-content img {
   width: 100%;
+}
+.my-dialog .el-dialog{
+	width: 1000px
 }
 </style>
 

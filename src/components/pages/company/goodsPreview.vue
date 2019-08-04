@@ -137,6 +137,7 @@ export default {
 .small > div {
   margin-right: 10px;
   cursor: pointer;
+  max-width: 80px;
 }
 .small > div img {
   width: 100%;

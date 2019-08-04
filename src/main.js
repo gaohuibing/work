@@ -41,7 +41,9 @@ import VueAxios from 'vue-axios';
 Vue.use(VueAxios, Axios);
 
 import VueBus from 'vue-bus';
+import VueDND from 'awe-dnd'
 
+Vue.use(VueDND)
 Vue.use(VueBus);
 
 let localStore = require('store');
