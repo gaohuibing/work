@@ -5,44 +5,31 @@
       <div class="c-about">
         <ul class="clearfix">
           <li class="c-info">
-            <div class="c-name">
-              <img src="../../../assets/images/Bitmap.png" alt>
-              <span>苏州清风雨广告有限公司</span>
-            </div>
-            <div class="c-part">
-              <div class="c-log">
-                <img src="../../../assets/images/qi.png" alt>
-                企业认证
-              </div>
-              <a @click.prevent style="color:#44B549">去认证</a>
-            </div>
-            <div class="c-part">
-              <div class="c-log" style="border-color:#10AEFF;color:#10AEFF">
-                <img src="../../../assets/images/gong.png" alt>
-                供应商
-              </div>
-              <a @click.prevent>已升级</a>
-            </div>
-          </li>
-          <li class="account">
-            <p>
-              账户余额：
-              <span>￥5000.00</span>
-              <a @click.prevent>充值</a>
-            </p>
-            <p>
-              账户余额：
-              <span>￥5000.00</span>
-              <a @click.prevent>提现</a>
-            </p>
+            <div class="img">
+							<img src="../../../assets/images/Bitmap.png" alt>
+						</div>
+						<div class="info-m">
+							<h5>苏州清枫语广告有限公司</h5>
+							<p>系统状态：未激活</p>
+							<div class="jh-btn">免费激活系统</div>
+						</div>
           </li>
           <li class="statistics">
-            <h5>登录统计</h5>
+            <h5>资产统计</h5>
             <p>
-              <span>总登录次数：</span>112次
+              <span>账户余额：</span><i><em>￥200.00</em><a @click.prevent="">充值</a></i>
             </p>
             <p>
-              <span>上次登陆时间：</span>2019-02-05 9:00:00
+              <span>分销账户：</span><i><em>￥200.00</em><a @click.prevent="">充值</a></i>
+            </p>
+          </li>
+          <li class="statistics statistics1">
+            <h5>登录统计</h5>
+            <p>
+              <span>总登录次数：</span><i>112次</i>
+            </p>
+            <p>
+              <span>上次登陆时间：</span><i>2019-02-05 9:00:00</i>
             </p>
           </li>
         </ul>
@@ -55,21 +42,21 @@
             <h5>120</h5>
             <p>咨询订单</p>
             <div>
-              <el-button type="primary" plain size="small">去受理</el-button>
+              <el-button type="primary" plain size="mini">去受理</el-button>
             </div>
           </li>
           <li>
             <h5>39</h5>
             <p>商品订单</p>
             <div>
-              <el-button type="primary" plain size="small">去发货</el-button>
+              <el-button type="primary" plain size="mini">去发货</el-button>
             </div>
           </li>
           <li>
             <h5>120</h5>
             <p>服务订单</p>
             <div>
-              <el-button type="primary" plain size="small">去续费</el-button>
+              <el-button type="primary" plain size="mini">去续费</el-button>
             </div>
           </li>
         </ul>
@@ -87,7 +74,7 @@
           <li>
             <div>
               <img src="../../../assets/images/download.png" alt>
-              <span>下载中心</span>
+              <span>批量发货</span>
             </div>
           </li>
           <li>
@@ -101,44 +88,40 @@
       <!-- 第四行 -->
       <div class="c-main">
         <div class="c-title">常用功能</div>
-        <ul class="normal-list">
-          <li>
-            <div>
-              <img src="../../../assets/images/gift.png" alt>
-              <div class="inp">
-                <h5>活动</h5>
-                <p>
-                  <span>已创：2</span>
-                  <span>可创：2</span>
-                </p>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <img src="../../../assets/images/shop.png" alt>
-              <div class="inp">
-                <h5>活动</h5>
-                <p>
-                  <span>已创：2</span>
-                  <span>可创：2</span>
-                </p>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <img src="../../../assets/images/share.png" alt>
-              <div class="inp">
-                <h5>活动</h5>
-                <p>
-                  <span>已创：2</span>
-                  <span>可创：2</span>
-                </p>
-              </div>
-            </div>
-          </li>
-        </ul>
+        <ul class="profile-list clearfix">
+					<li>
+						<div>39</div>
+						<p>昨日新增商品</p>
+					</li>
+					<li>
+						<div>39</div>
+						<p>昨日新增自营订单</p>
+					</li>
+					<li>
+						<div>￥39</div>
+						<p>昨日交易流水</p>
+					</li>
+					<li>
+						<div>39</div>
+						<p>昨日新增会员</p>
+					</li>
+					<li>
+						<div>39</div>
+						<p>自有商品总数</p>
+					</li>
+					<li>
+						<div>39</div>
+						<p>自营订单总数</p>
+					</li>
+					<li>
+						<div>￥39</div>
+						<p>交易流水总额</p>
+					</li>
+					<li>
+						<div>39</div>
+						<p>会员总数</p>
+					</li>
+				</ul>
       </div>
     </div>
   </div>
@@ -180,41 +163,41 @@ export default {
   border: none;
 }
 .company-home .c-about .c-info {
-  padding-left: 33px;
+  padding-left: 10px;
+	padding-top: 28px;
+	display: flex;
+	flex-shrink: 1
 }
-.company-home .c-about .c-name {
-  display: flex;
-  line-height: 56px;
-  margin-bottom: 16px;
-  margin-top: -16px;
+.company-home .c-info .img{
+	width: 56px;	
 }
-.company-home .c-about .c-name img {
-  margin-right: 8px;
-  width: 56px;
-  height: 56px;
+.company-home .c-info .img image{
+	width: 100%
 }
-.company-home .c-about .c-part {
-  display: flex;
-  line-height: 30px;
-  font-size: 12px;
-  margin-bottom: 8px;
+.company-home .info-m{
+	width: 200px;
+	text-align: center
 }
-.company-home .c-about .c-log {
-  width: 104px;
-  height: 30px;
-  border: 1px solid rgba(255, 190, 0, 1);
-  color: rgba(255, 190, 0, 1);
-  text-align: center;
-  line-height: 30px;
-  border-radius: 4px;
-  margin-right: 32px;
+.company-home .info-m h5{
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 20px
 }
-.company-home .c-about .c-log img {
-  /* margin-top: 6px; */
-  margin-right: 6px;
-  vertical-align: middle;
-  margin-top: -2px;
+.company-home .info-m p{
+	font-size: 16px
 }
+.company-home .info-m .jh-btn{
+	width: 128px;
+	height: 23px;
+	text-align: center;
+	background: #44B549;
+	line-height: 23px;
+	border-radius: 12px;
+	font-size: 12px;
+	color: #ffffff;
+	margin: 10px auto
+}
+
 .company-home .account {
   padding: 28px 0;
   text-align: center;
@@ -236,13 +219,15 @@ export default {
   padding-left: 56px;
 }
 .company-home .statistics h5 {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 18px;
   color: #1c1c1c;
+	font-weight: normal
 }
 .company-home .statistics p {
   font-size: 14px;
   margin-bottom: 8px;
+
 }
 .company-home .statistics p span {
   display: inline-block;
@@ -250,9 +235,24 @@ export default {
   color: #999;
   margin-right: 5px;
 }
+.company-home .statistics1 p{
+	display: flex;
+	justify-content: space-between
+} 
+.company-home .statistics p i{
+	font-style: normal
+}
+.company-home .statistics p a{
+	color: #44B549
+}
+.company-home .statistics p em{
+	width: 80px;
+	display: inline-block;
+	font-style: normal
+}
 .c-title {
   font-size: 18px;
-  margin: 15px 0 10px 0;
+  margin: 30px 0;
   font-weight: bold;
 }
 .todo-list {
@@ -297,6 +297,9 @@ export default {
   vertical-align: middle;
   margin-right: 24px;
 }
+.extra-list span{
+	font-size: 18px
+}
 .normal-list {
   display: flex;
 }
@@ -337,5 +340,26 @@ export default {
 }
 .normal-list li .inp p span {
   margin-right: 16px;
+}
+.c-main .el-button{
+	width: 120px
+}
+.profile-list{
+	display: flex;
+	flex-shrink: 1;
+	flex-wrap: wrap; 
+}
+.profile-list li{
+	width: 25%;
+
+	margin-bottom: 30px;
+	text-align: center
+}
+.profile-list li div{
+	font-size: 36px;
+	margin-bottom: 15px
+}
+.profile-list li p{
+
 }
 </style>

@@ -31,7 +31,7 @@
 	</div>
       <div class="wel-tools">
         <div class="jihuo-btn">立即激活</div>
-        <div>体验一下</div>
+        <div @click="toHome">体验一下</div>
       </div>
     </div>
   </div>
@@ -46,7 +46,11 @@ export default {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+		toHome(){
+			window.location.href='/'
+		}
+	},
   watch: {}
 };
 </script>

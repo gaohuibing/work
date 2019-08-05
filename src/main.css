@@ -415,7 +415,7 @@ a {
     position: fixed;
     background: #fff;
     top: 91px;
-    bottom: 30px
+    /* bottom: 30px */
 }
 
 .sider li {

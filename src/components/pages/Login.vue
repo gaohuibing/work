@@ -129,7 +129,11 @@ export default {
                 this.$message.error({ message: "没有返回token" });
                 return false;
               }
-              this.$api.setToken(token);
+							this.$api.setToken(token);
+							this.$message({
+								type:'success',
+								message:'登录成功'
+							})
               if (this.checked) {
                 store.set("username", this.mobile);
               }
@@ -155,7 +159,7 @@ export default {
             let userInfo = res.data.data;
             store.set("userInfo", userInfo);
             setTimeout(h => {
-              window.location.href = "/";
+              this.$router.push('./welcome')
             });
           } else {
             this.$message.error({ message: res.data.msg });
